@@ -1,131 +1,208 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIheshen 的炫酷网站</title>
-    <style>
-        /* 全屏背景 */
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIheshen 的个人主页</title>
+<style>
+    /* 全屏背景 */
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        overflow-x: hidden;
+        background: #0a0a0a;
+        color: #fff;
+    }
 
-        /* 动态背景星空 */
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
+    /* 星空背景 */
+    canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 0;
+    }
 
-        /* 主内容居中 */
-        .content {
-            position: relative;
-            z-index: 10;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            text-align: center;
-            text-shadow: 0 0 15px rgba(0,0,0,0.5);
-        }
+    /* 主容器 */
+    .container {
+        position: relative;
+        z-index: 10;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 50px 20px;
+        text-align: center;
+    }
 
-        h1 {
-            font-size: 4em;
-            margin: 0;
-        }
+    h1 {
+        font-size: 4em;
+        margin-bottom: 10px;
+        text-shadow: 0 0 20px #0ff;
+    }
 
-        p {
-            font-size: 1.5em;
-            margin: 10px 0;
-        }
+    h2 {
+        font-size: 2em;
+        margin-bottom: 30px;
+        color: #0ff;
+    }
 
-        a {
-            color: #00ffff;
-            text-decoration: none;
-            font-weight: bold;
-            transition: 0.3s;
-        }
+    p {
+        font-size: 1.2em;
+        line-height: 1.6;
+        margin-bottom: 30px;
+        color: #ccc;
+    }
 
-        a:hover {
-            color: #ff00ff;
-            transform: scale(1.1);
-        }
-    </style>
+    .section {
+        margin-bottom: 50px;
+    }
+
+    /* 作品展示 */
+    .works {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .work-item {
+        background: rgba(255,255,255,0.05);
+        padding: 20px;
+        width: 250px;
+        border-radius: 15px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .work-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 0 20px #0ff;
+    }
+
+    a {
+        color: #0ff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    a:hover {
+        color: #ff0;
+    }
+
+    /* 联系方式按钮 */
+    .contact a {
+        display: inline-block;
+        margin: 0 10px;
+        padding: 10px 20px;
+        background: rgba(0,255,255,0.2);
+        border-radius: 10px;
+        transition: background 0.3s, transform 0.3s;
+    }
+
+    .contact a:hover {
+        background: rgba(255,0,255,0.3);
+        transform: scale(1.1);
+    }
+</style>
 </head>
 <body>
-    <canvas id="stars"></canvas>
-    <div class="content">
-        <h1>欢迎来到 AIheshen</h1>
-        <p>炫酷的 GitHub Pages 主页</p>
-        <p><a href="https://github.com/AIheshen" target="_blank">访问我的 GitHub</a></p>
+<canvas id="stars"></canvas>
+
+<div class="container">
+    <!-- 欢迎标题 -->
+    <div class="section">
+        <h1>欢迎来到 AIheshen 的主页</h1>
+        <h2>我的个人作品与展示空间</h2>
+        <p>这是我的免费个人主页，你可以在这里了解我的技能、作品和联系方式。</p>
     </div>
 
-    <script>
-        // 星空效果
-        const canvas = document.getElementById('stars');
-        const ctx = canvas.getContext('2d');
-        let w = canvas.width = window.innerWidth;
-        let h = canvas.height = window.innerHeight;
+    <!-- 作品展示 -->
+    <div class="section">
+        <h2>作品展示</h2>
+        <div class="works">
+            <div class="work-item">
+                <h3>作品 1</h3>
+                <p>描述你的第一个作品，可以是项目、设计或作品截图。</p>
+                <a href="#">查看详情</a>
+            </div>
+            <div class="work-item">
+                <h3>作品 2</h3>
+                <p>描述你的第二个作品，突出亮点和特点。</p>
+                <a href="#">查看详情</a>
+            </div>
+            <div class="work-item">
+                <h3>作品 3</h3>
+                <p>继续添加更多作品，吸引访客关注你的技能。</p>
+                <a href="#">查看详情</a>
+            </div>
+        </div>
+    </div>
 
-        const stars = [];
-        const numStars = 200;
+    <!-- 联系方式 -->
+    <div class="section contact">
+        <h2>联系我</h2>
+        <a href="https://github.com/AIheshen" target="_blank">GitHub</a>
+        <a href="mailto:youremail@example.com">邮箱</a>
+        <a href="#">其他社交</a>
+    </div>
+</div>
 
-        function initStars() {
-            for(let i=0;i<numStars;i++){
-                stars.push({
-                    x: Math.random()*w,
-                    y: Math.random()*h,
-                    r: Math.random()*1.5,
-                    d: Math.random()*2
-                });
-            }
-        }
+<script>
+    // 星空动画
+    const canvas = document.getElementById('stars');
+    const ctx = canvas.getContext('2d');
+    let w = canvas.width = window.innerWidth;
+    let h = canvas.height = window.innerHeight;
 
-        function drawStars(){
-            ctx.clearRect(0,0,w,h);
-            ctx.fillStyle = "#fff";
-            ctx.shadowBlur = 5;
-            ctx.shadowColor = "#fff";
-            for(let i=0;i<numStars;i++){
-                let s = stars[i];
-                ctx.beginPath();
-                ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-                ctx.fill();
-            }
-            moveStars();
-        }
+    const stars = [];
+    const numStars = 300;
 
-        let angle = 0;
-        function moveStars(){
-            angle += 0.01;
-            for(let i=0;i<numStars;i++){
-                let s = stars[i];
-                s.y += Math.cos(angle+s.d)+0.5;
-                s.x += Math.sin(angle);
-                if(s.x > w) s.x = 0;
-                if(s.x < 0) s.x = w;
-                if(s.y > h) s.y = 0;
-            }
-        }
-
-        function animate(){
-            drawStars();
-            requestAnimationFrame(animate);
-        }
-
-        window.addEventListener('resize',()=>{
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
+    for(let i=0;i<numStars;i++){
+        stars.push({
+            x: Math.random()*w,
+            y: Math.random()*h,
+            r: Math.random()*1.5,
+            d: Math.random()*2
         });
+    }
 
-        initStars();
-        animate();
-    </script>
+    function drawStars(){
+        ctx.clearRect(0,0,w,h);
+        ctx.fillStyle = "#fff";
+        ctx.shadowBlur = 5;
+        ctx.shadowColor = "#fff";
+        for(let i=0;i<numStars;i++){
+            let s = stars[i];
+            ctx.beginPath();
+            ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+            ctx.fill();
+        }
+        moveStars();
+    }
+
+    let angle = 0;
+    function moveStars(){
+        angle += 0.01;
+        for(let i=0;i<numStars;i++){
+            let s = stars[i];
+            s.y += Math.cos(angle+s.d)+0.5;
+            s.x += Math.sin(angle);
+            if(s.x > w) s.x = 0;
+            if(s.x < 0) s.x = w;
+            if(s.y > h) s.y = 0;
+        }
+    }
+
+    function animate(){
+        drawStars();
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize',()=>{
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+    });
+
+    animate();
+</script>
 </body>
 </html>
