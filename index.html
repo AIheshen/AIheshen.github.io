@@ -428,6 +428,10 @@
                     
                     // 边界停留时间计数器
                     this.borderStuckTime = 0;
+                    
+                    // 中心吸引力参数
+                    this.centerAttractionActive = false;
+                    this.activationTime = 0;
                 }
                 
                 update(mouse) {
@@ -440,7 +444,7 @@
                     let dx = this.x - mouse.x;
                     let dy = this.y - mouse.y;
                     let dist = Math.sqrt(dx*dx + dy*dy);
-                    const influence = 90; // 范围缩小一半 (原为180)
+                    const influence = 100; 
                     const maxForce = 25;
                     let fx = 0, fy = 0;
                     
@@ -452,7 +456,7 @@
 
                     // 弹性边界 - 增强边界斥力防止堆积
                     let borderForceX = 0, borderForceY = 0;
-                    const borderRange = 80; // 增加边界范围
+                    const borderRange = 30; // 增加边界范围
                     const borderStrength = 2.0; // 增强边界强度
                     
                     // 左边界弹性
@@ -520,9 +524,16 @@
                         this.borderStuckTime = 0;
                     }
                     
-                    // 如果粒子在边界停留时间过长，给它一个远离边界的力
+                    // 如果粒子在边界停留时间过长，激活中心吸引力
                     if(this.borderStuckTime > 20) {
-                        // 计算指向中心的向量
+                        this.centerAttractionActive = true;
+                        this.activationTime = 0;
+                        this.borderStuckTime = 0;
+                    }
+                    
+                    // 中心吸引力逻辑
+                    if(this.centerAttractionActive) {
+                        this.activationTime++;
                         const centerX = canvas.width / 2;
                         const centerY = canvas.height / 2;
                         const toCenterX = centerX - this.x;
@@ -530,13 +541,21 @@
                         const toCenterDist = Math.sqrt(toCenterX*toCenterX + toCenterY*toCenterY);
                         
                         if(toCenterDist > 0) {
-                            // 添加指向中心的速度
-                            const centerForce = 0.5;
+                            // 吸引强度随时间线性增加，最大0.8
+                            const centerForce = Math.min(0.8, 0.02 * this.activationTime);
                             this.vx_base += (toCenterX / toCenterDist) * centerForce;
                             this.vy_base += (toCenterY / toCenterDist) * centerForce;
+                            
+                            // 如果粒子足够接近中心（距离 < 100），关闭吸引
+                            if(toCenterDist < 100) {
+                                this.centerAttractionActive = false;
+                            }
                         }
                         
-                        this.borderStuckTime = 0;
+                        // 超时关闭吸引（防止永久吸引）
+                        if(this.activationTime > 100) {
+                            this.centerAttractionActive = false;
+                        }
                     }
                 }
                 
