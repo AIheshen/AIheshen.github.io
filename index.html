@@ -39,10 +39,8 @@
 </head>
 <body>
 
-    <!-- Canvas 容器，p5.js 将在这里创建背景 -->
     <div id="canvas-bg"></div>
 
-    <!-- 导航和主要内容部分保持不变 -->
     <nav>
         <div class="container">
             <ul>
@@ -55,51 +53,55 @@
     </nav>
     <div class="main-content">
         <section id="hero" class="section active">
-            <img src="IMG_20250810_032653.png" alt="头像" class="profile-img">
+            <img src="IMG_20250810_032653.png" alt="艾合的头像" class="profile-img">
             <h1>你好，我是艾合</h1>
             <p class="subtitle">一位充满热情的编程爱好者</p>
         </section>
         <section id="about" class="section">
-             <div class="container"><h2>关于我...</h2></div>
+             <div class="container">
+                 <h2>关于我</h2>
+                 <h3>我编程全靠AI“代工”，自己就负责提需求、点运行，说我是开发者，不如说我是AI的“需求嘴替”+“成品验收员”。 </h3>
+            </div>
         </section>
         <section id="projects" class="section">
-             <div class="container"><h2>我的项目...</h2></div>
+             <div class="container">
+                 <h2>我的项目</h2>
+                 <h3>你还期望一个新手能有多少项目</h3>
+            </div>
         </section>
         <section id="contact" class="section">
-             <div class="container"><h2>联系我...</h2></div>
+             <div class="container">
+                 <h2>联系我</h2>
+                 <h3> 需要内容或吹牛逼来这里（vx）：TuDouXingRenya</h3>
+            </div>
         </section>
     </div>
 
-    <!-- 1. 引入 p5.js 库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     
-    <!-- 2. p5.js 粒子系统脚本 -->
     <script>
-        // --- 可调参数 ---
-        const PARTICLE_COUNT = 150;     // 粒子总数 (可根据性能调整)
-        const REPULSION_RADIUS = 150;   // 鼠标排斥力场的半径
-        const REPULSION_STRENGTH = 1.5; // 排斥力的强度 (数值越大，推力越强)
-        const CONNECTION_DISTANCE = 120; // 粒子之间连线的最大距离
+        // --- 可调参数 (已更新) ---
+        const PARTICLE_COUNT = 500;     // 粒子总数 (从 150 翻倍)
+        const REPULSION_RADIUS = 80;   // 鼠标排斥力场的半径
+        const REPULSION_STRENGTH = 50; // 排斥力的强度
+        const CONNECTION_DISTANCE = 120; // 粒子之间连线的最大距离 (从 120 增加)
         // --- 参数结束 ---
 
         let particles = [];
         let canvas;
 
-        // p5.js 的初始化函数，只运行一次
         function setup() {
             canvas = createCanvas(windowWidth, windowHeight);
-            canvas.parent('canvas-bg'); // 将 canvas 放入我们指定的 div 中
+            canvas.parent('canvas-bg');
             for (let i = 0; i < PARTICLE_COUNT; i++) {
                 particles.push(new Particle());
             }
         }
 
-        // p5.js 的绘图函数，每秒约运行 60 次
         function draw() {
             background(10, 10, 26);
             let mouse = createVector(mouseX, mouseY);
 
-            // 遍历所有粒子，更新状态并绘制
             for (let p of particles) {
                 p.repel(mouse);
                 p.update();
@@ -107,12 +109,11 @@
                 p.display();
             }
 
-            // 绘制粒子间的连接线
             for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {
                     let dist = p5.Vector.dist(particles[i].pos, particles[j].pos);
                     if (dist < CONNECTION_DISTANCE) {
-                        let alpha = map(dist, 0, CONNECTION_DISTANCE, 200, 0);
+                        let alpha = map(dist, 0, CONNECTION_DISTANCE, 150, 0); // 降低一些线的最大不透明度，防止画面过曝
                         stroke(255, alpha);
                         strokeWeight(0.5);
                         line(particles[i].pos.x, particles[i].pos.y, particles[j].pos.x, particles[j].pos.y);
@@ -121,12 +122,10 @@
             }
         }
 
-        // 窗口大小改变时，重设画布大小
         function windowResized() {
             resizeCanvas(windowWidth, windowHeight);
         }
 
-        // 定义“粒子”这个对象
         class Particle {
             constructor() {
                 this.pos = createVector(random(width), random(height));
@@ -137,39 +136,33 @@
                 this.size = random(1.5, 3);
             }
 
-            // 核心：计算并施加排斥力
             repel(target) {
                 let force = p5.Vector.sub(this.pos, target);
                 let distance = force.mag();
                 if (distance < REPULSION_RADIUS) {
-                    // 距离越近，力越大 (反比关系)
                     let strength = REPULSION_STRENGTH * (REPULSION_RADIUS - distance) / REPULSION_RADIUS;
                     force.setMag(strength);
                     this.applyForce(force);
                 }
             }
 
-            // 将力施加到加速度上
             applyForce(force) {
                 this.acc.add(force);
             }
 
-            // 更新粒子的位置
             update() {
                 this.vel.add(this.acc);
                 this.vel.limit(this.maxSpeed);
                 this.pos.add(this.vel);
-                this.acc.mult(0); // 每帧重置加速度
+                this.acc.mult(0);
             }
 
-            // 绘制粒子
             display() {
                 stroke(this.color);
                 strokeWeight(this.size);
                 point(this.pos.x, this.pos.y);
             }
 
-            // 边界处理：穿墙效果
             edges() {
                 if (this.pos.x > width) this.pos.x = 0;
                 if (this.pos.x < 0) this.pos.x = width;
@@ -179,7 +172,6 @@
         }
     </script>
     
-    <!-- 3. 导航菜单切换逻辑 (保持不变) -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const navLinks = document.querySelectorAll('.nav-link');
