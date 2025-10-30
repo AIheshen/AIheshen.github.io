@@ -4,998 +4,530 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>艾合主页</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* ==== 基础重置 ==== */
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{
+            background:#000;color:#fff;
+            font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+            overflow-x:hidden;min-height:100vh;
         }
-        
-        body {
-            background-color: #000;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
-            min-height: 100vh;
+        #background{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
+
+        /* ==== 布局 ==== */
+        .container{max-width:1200px;margin:auto;padding:2rem;}
+        header{display:flex;justify-content:space-between;align-items:center;padding:1.5rem 0;
+                border-bottom:1px solid rgba(0,200,255,.3);}
+        .logo{font-size:1.8rem;font-weight:bold;
+              background:linear-gradient(90deg,#00ffff,#0080ff);
+              -webkit-background-clip:text;background-clip:text;color:transparent;}
+        nav ul{display:flex;list-style:none;gap:2rem;}
+        nav a{color:#a0e0ff;text-decoration:none;transition:color .3s;font-size:1.1rem;}
+        nav a:hover{color:#00ccff;}
+
+        .hero{text-align:center;padding:6rem 0;}
+        h1{font-size:3.5rem;margin-bottom:1rem;
+            background:linear-gradient(90deg,#00ffff,#0080ff,#a200ff);
+            -webkit-background-clip:text;background-clip:text;color:transparent;}
+        .tagline{font-size:1.5rem;margin-bottom:2rem;color:#a0e0ff;}
+        .btn{display:inline-block;background:rgba(0,100,150,.5);color:#fff;
+              border:1px solid #00aaff;padding:.8rem 1.8rem;border-radius:5px;
+              text-decoration:none;transition:all .3s;margin:0 .5rem;}
+        .btn:hover{background:rgba(0,150,200,.7);box-shadow:0 0 15px rgba(0,200,255,.5);}
+
+        .about{display:grid;grid-template-columns:1fr 2fr;gap:3rem;margin:5rem 0;align-items:center;}
+        .profile-img{width:100%;border-radius:50%;border:3px solid rgba(0,200,255,.5);
+                     box-shadow:0 0 20px rgba(0,200,255,.3);}
+        .about-text h2{font-size:2.2rem;margin-bottom:1.5rem;color:#00ccff;}
+        .about-text p{line-height:1.6;margin-bottom:1.5rem;font-size:1.1rem;}
+
+        .skills,.projects{margin:5rem 0;}
+        .skills h2,.projects h2{text-align:center;font-size:2.2rem;margin-bottom:3rem;color:#00ccff;}
+        .skills-grid,.project-grid{display:grid;gap:2rem;}
+        .skills-grid{grid-template-columns:repeat(auto-fit,minmax(250px,1fr));}
+        .project-grid{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));}
+        .skill-card,.project-card{
+            background:rgba(10,30,50,.7);padding:2rem;border-radius:10px;
+            border:1px solid rgba(0,150,255,.3);transition:transform .3s;
         }
-        
-        #background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
+        .skill-card:hover,.project-card:hover{transform:translateY(-5px);}
+        .skill-card h3,.project-content h3{color:#00ccff;margin-bottom:1rem;}
+        .project-img{width:100%;height:200px;background:linear-gradient(45deg,#0a192f,#00ccff);
+                     display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;}
+
+        footer{text-align:center;padding:2rem;margin-top:5rem;
+               border-top:1px solid rgba(0,100,200,.3);}
+        .social-links{display:flex;justify-content:center;gap:1.5rem;margin-top:1.5rem;}
+        .social-links a{color:#a0e0ff;font-size:1.5rem;transition:color .3s;}
+        .social-links a:hover{color:#00ccff;}
+
+        /* ==== AI 聊天框 ==== */
+        .ai-chat-btn{
+            position:fixed;bottom:2rem;right:2rem;width:60px;height:60px;border-radius:50%;
+            background:linear-gradient(135deg,#00ccff,#a200ff);display:flex;align-items:center;
+            justify-content:center;cursor:pointer;box-shadow:0 0 15px rgba(0,200,255,.7);
+            z-index:1000;transition:all .3s;
         }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
+        .ai-chat-btn:hover{transform:scale(1.1);box-shadow:0 0 25px rgba(162,0,255,.7);}
+        .ai-chat-btn i{font-size:1.8rem;color:#fff;}
+
+        .ai-chat-container{
+            position:fixed;bottom:2rem;right:2rem;width:380px;height:500px;
+            background:rgba(10,20,40,.95);border:1px solid rgba(0,200,255,.5);
+            border-radius:15px;box-shadow:0 0 30px rgba(0,200,255,.4);
+            display:none;flex-direction:column;z-index:1001;overflow:hidden;
+            backdrop-filter:blur(10px);
         }
-        
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 0;
-            border-bottom: 1px solid rgba(0, 200, 255, 0.3);
-        }
-        
-        .logo {
-            font-size: 1.8rem;
-            font-weight: bold;
-            background: linear-gradient(90deg, #00ffff, #0080ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-        
-        nav a {
-            color: #a0e0ff;
-            text-decoration: none;
-            transition: color 0.3s;
-            font-size: 1.1rem;
-        }
-        
-        nav a:hover {
-            color: #00ccff;
-        }
-        
-        .hero {
-            text-align: center;
-            padding: 6rem 0;
-        }
-        
-        h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(90deg, #00ffff, #0080ff, #a200ff);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        
-        .tagline {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
-            color: #a0e0ff;
-        }
-        
-        .btn {
-            display: inline-block;
-            background: rgba(0, 100, 150, 0.5);
-            color: white;
-            border: 1px solid #00aaff;
-            padding: 0.8rem 1.8rem;
-            border-radius: 5px;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-size: 1rem;
-            margin: 0 0.5rem;
-        }
-        
-        .btn:hover {
-            background: rgba(0, 150, 200, 0.7);
-            box-shadow: 0 0 15px rgba(0, 200, 255, 0.5);
-        }
-        
-        .about {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 3rem;
-            margin: 5rem 0;
-            align-items: center;
-        }
-        
-        .profile-img {
-            width: 100%;
-            border-radius: 50%;
-            border: 3px solid rgba(0, 200, 255, 0.5);
-            box-shadow: 0 0 20px rgba(0, 200, 255, 0.3);
-        }
-        
-        .about-text h2 {
-            font-size: 2.2rem;
-            margin-bottom: 1.5rem;
-            color: #00ccff;
-        }
-        
-        .about-text p {
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
-        }
-        
-        .skills {
-            margin: 5rem 0;
-        }
-        
-        .skills h2 {
-            text-align: center;
-            font-size: 2.2rem;
-            margin-bottom: 3rem;
-            color: #00ccff;
-        }
-        
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-        
-        .skill-card {
-            background: rgba(10, 30, 50, 0.7);
-            padding: 2rem;
-            border-radius: 10px;
-            border: 1px solid rgba(0, 150, 255, 0.3);
-            transition: transform 0.3s;
-        }
-        
-        .skill-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .skill-card h3 {
-            color: #00ccff;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-        
-        .projects {
-            margin: 5rem 0;
-        }
-        
-        .projects h2 {
-            text-align: center;
-            font-size: 2.2rem;
-            margin-bottom: 3rem;
-            color: #00ccff;
-        }
-        
-        .project-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-        
-        .project-card {
-            background: rgba(10, 30, 50, 0.7);
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid rgba(0, 150, 255, 0.3);
-            transition: transform 0.3s;
-        }
-        
-        .project-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .project-img {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(45deg, #0a192f, #00ccff);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-        }
-        
-        .project-content {
-            padding: 1.5rem;
-        }
-        
-        .project-content h3 {
-            color: #00ccff;
-            margin-bottom: 1rem;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 2rem;
-            margin-top: 5rem;
-            border-top: 1px solid rgba(0, 100, 200, 0.3);
-        }
-        
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-        
-        .social-links a {
-            color: #a0e0ff;
-            font-size: 1.5rem;
-            transition: color 0.3s;
-        }
-        
-        .social-links a:hover {
-            color: #00ccff;
-        }
-        
-        /* AI对话框样式 */
-        .ai-chat-btn {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #00ccff, #a200ff);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 0 15px rgba(0, 200, 255, 0.7);
-            z-index: 1000;
-            transition: all 0.3s;
-        }
-        
-        .ai-chat-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 25px rgba(162, 0, 255, 0.7);
-        }
-        
-        .ai-chat-btn i {
-            font-size: 1.8rem;
-            color: white;
-        }
-        
-        .ai-chat-container {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 380px;
-            height: 500px;
-            background: rgba(10, 20, 40, 0.95);
-            border: 1px solid rgba(0, 200, 255, 0.5);
-            border-radius: 15px;
-            box-shadow: 0 0 30px rgba(0, 200, 255, 0.4);
-            display: none;
-            flex-direction: column;
-            z-index: 1001;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-        
-        .ai-chat-header {
-            padding: 1rem;
-            background: rgba(0, 50, 100, 0.7);
-            border-bottom: 1px solid rgba(0, 200, 255, 0.3);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .ai-chat-header h3 {
-            color: #00ccff;
-            margin: 0;
-            font-size: 1.2rem;
-        }
-        
-        .ai-chat-close {
-            background: none;
-            border: none;
-            color: #a0e0ff;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-        
-        .ai-chat-close:hover {
-            color: #ff3366;
-        }
-        
-        .ai-chat-messages {
-            flex: 1;
-            padding: 1rem;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        
-        .message {
-            max-width: 85%;
-            padding: 0.8rem 1rem;
-            border-radius: 15px;
-            position: relative;
-            animation: fadeIn 0.3s;
-        }
-        
-        .message.user {
-            align-self: flex-end;
-            background: rgba(0, 100, 200, 0.7);
-            border-bottom-right-radius: 5px;
-        }
-        
-        .message.ai {
-            align-self: flex-start;
-            background: rgba(30, 60, 90, 0.7);
-            border-bottom-left-radius: 5px;
-        }
-        
-        .message-content {
-            line-height: 1.4;
-        }
-        
-        .ai-typing {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #a0e0ff;
-            font-style: italic;
-        }
-        
-        .typing-dots {
-            display: flex;
-            gap: 3px;
-        }
-        
-        .typing-dots span {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #00ccff;
-            animation: typing 1.4s infinite ease-in-out;
-        }
-        
-        .typing-dots span:nth-child(1) { animation-delay: 0s; }
-        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-        
-        .ai-chat-input-container {
-            padding: 1rem;
-            border-top: 1px solid rgba(0, 200, 255, 0.3);
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .ai-chat-input {
-            flex: 1;
-            padding: 0.8rem;
-            background: rgba(20, 40, 70, 0.7);
-            border: 1px solid rgba(0, 150, 255, 0.4);
-            border-radius: 10px;
-            color: white;
-            font-size: 1rem;
-        }
-        
-        .ai-chat-input:focus {
-            outline: none;
-            border-color: #00ccff;
-            box-shadow: 0 0 10px rgba(0, 200, 255, 0.4);
-        }
-        
-        .ai-chat-send {
-            padding: 0.8rem 1.2rem;
-            background: rgba(0, 100, 200, 0.7);
-            border: 1px solid rgba(0, 150, 255, 0.5);
-            border-radius: 10px;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .ai-chat-send:hover {
-            background: rgba(0, 150, 200, 0.9);
-            box-shadow: 0 0 10px rgba(0, 200, 255, 0.6);
-        }
-        
-        .ai-chat-send:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-5px); }
-        }
-        
-        @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            nav ul {
-                gap: 1rem;
-            }
-            
-            h1 {
-                font-size: 2.5rem;
-            }
-            
-            .tagline {
-                font-size: 1.2rem;
-            }
-            
-            .about {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-            
-            .profile-img {
-                max-width: 300px;
-                margin: 0 auto;
-            }
-            
-            .ai-chat-container {
-                width: calc(100vw - 2rem);
-                height: 70vh;
-                right: 1rem;
-                bottom: 1rem;
-            }
+        .ai-chat-header{padding:1rem;background:rgba(0,50,100,.7);
+                         border-bottom:1px solid rgba(0,200,255,.3);
+                         display:flex;justify-content:space-between;align-items:center;}
+        .ai-chat-header h3{color:#00ccff;margin:0;font-size:1.2rem;}
+        .ai-chat-close{background:none;border:none;color:#a0e0ff;font-size:1.5rem;
+                        cursor:pointer;transition:color .3s;}
+        .ai-chat-close:hover{color:#ff3366;}
+
+        .ai-chat-messages{flex:1;padding:1rem;overflow-y:auto;display:flex;
+                          flex-direction:column;gap:1rem;}
+        .message{max-width:85%;padding:.8rem 1rem;border-radius:15px;
+                 position:relative;animation:fadeIn .3s;}
+        .message.user{align-self:flex-end;background:rgba(0,100,200,.7);
+                      border-bottom-right-radius:5px;}
+        .message.ai{align-self:flex-start;background:rgba(30,60,90,.7);
+                    border-bottom-left-radius:5px;}
+        .message-content{line-height:1.4;}
+        .ai-typing{display:flex;align-items:center;gap:5px;color:#a0e0ff;font-style:italic;}
+        .typing-dots{display:flex;gap:3px;}
+        .typing-dots span{width:6px;height:6px;border-radius:50%;background:#00ccff;
+                          animation:typing 1.4s infinite ease-in-out;}
+        .typing-dots span:nth-child(1){animation-delay:0s;}
+        .typing-dots span:nth-child(2){animation-delay:.2s;}
+        .typing-dots span:nth-child(3){animation-delay:.4s;}
+
+        .ai-chat-input-container{padding:1rem;border-top:1px solid rgba(0,200,255,.3);
+                                 display:flex;gap:.5rem;}
+        .ai-chat-input{flex:1;padding:.8rem;background:rgba(20,40,70,.7);
+                       border:1px solid rgba(0,150,255,.4);border-radius:10px;
+                       color:#fff;font-size:1rem;}
+        .ai-chat-input:focus{outline:none;border-color:#00ccff;
+                             box-shadow:0 0 10px rgba(0,200,255,.4);}
+        .ai-chat-send{padding:.8rem 1.2rem;background:rgba(0,100,200,.7);
+                      border:1px solid rgba(0,150,255,.5);border-radius:10px;
+                      color:#fff;cursor:pointer;transition:all .3s;}
+        .ai-chat-send:hover{background:rgba(0,150,200,.9);
+                            box-shadow:0 0 10px rgba(0,200,255,.6);}
+        .ai-chat-send:disabled{opacity:.5;cursor:not-allowed;}
+
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}
+                          to{opacity:1;transform:translateY(0);}}
+        @keyframes typing{0%,60%,100%{transform:translateY(0);}
+                          30%{transform:translateY(-5px);}}
+
+        /* ==== 响应式 ==== */
+        @media(max-width:768px){
+            header{flex-direction:column;gap:1rem;}
+            nav ul{gap:1rem;}
+            h1{font-size:2.5rem;}
+            .tagline{font-size:1.2rem;}
+            .about{grid-template-columns:1fr;text-align:center;}
+            .profile-img{max-width:300px;margin:auto;}
+            .ai-chat-container{width:calc(100vw - 2rem);height:70vh;right:1rem;bottom:1rem;}
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <canvas id="background"></canvas>
-    
-    <div class="container">
-        <header>
-            <div class="logo">艾合主页</div>
-            <nav>
-                <ul>
-                    <li><a href="#home">首页</a></li>
-                    <li><a href="#about">关于我</a></li>
-                    <li><a href="#skills">技能</a></li>
-                    <li><a href="#projects">项目</a></li>
-                    <li><a href="#contact">联系</a></li>
-                </ul>
-            </nav>
-        </header>
-        
-        <section class="hero" id="home">
-            <h1>欢迎来到我的空间</h1>
-            <p class="tagline">新手开发者 · 创作者 · 未来技术探索者</p>
-            <div>
-                <a href="#about" class="btn">了解更多</a>
-                <a href="#contact" class="btn">联系我</a>
-            </div>
-        </section>
-        
-        <section class="about" id="about">
-            <div>
-                <img src="images/IMG_20250810_032653.png" alt="个人头像" class="profile-img">
-            </div>
-            <div class="about-text">
-                <h2>关于我</h2>
-                <p>我是一名充满热情的开发者，专注于创造优雅而高效的解决方案。拥有多年的前端和后端开发经验，致力于将复杂问题转化为直观的用户体验。</p>
-                <p>我热爱探索新技术，并相信代码可以改变世界。在我的职业生涯中，我参与过多个大型项目，从概念到部署，积累了丰富的实践经验。</p>
-                <p>除了编码，我还喜欢研究人机交互、用户体验设计，并经常在技术社区分享我的知识和经验。</p>
-            </div>
-        </section>
-        
-        <section class="skills" id="skills">
-            <h2>专业技能</h2>
-            <div class="skills-grid">
-                <div class="skill-card">
-                    <h3>前端开发</h3>
-                    <p>HTML5, CSS3, JavaScript, React, Vue.js, TypeScript</p>
-                </div>
-                <div class="skill-card">
-                    <h3>后端开发</h3>
-                    <p>Node.js, Python, PHP, MySQL, MongoDB, RESTful APIs</p>
-                </div>
-                <div class="skill-card">
-                    <h3>UI/UX 设计</h3>
-                    <p>Figma, Adobe XD, 用户研究, 交互设计, 原型制作</p>
-                </div>
-                <div class="skill-card">
-                    <h3>其他技能</h3>
-                    <p>Git, Docker, AWS, 敏捷开发, 项目管理</p>
-                </div>
-            </div>
-        </section>
-        
-        <section class="projects" id="projects">
-            <h2>我的项目</h2>
-            <div class="project-grid">
-                <div class="project-card">
-                    <div class="project-img">项目截图</div>
-                    <div class="project-content">
-                        <h3>响应式网站设计</h3>
-                        <p>使用现代前端技术构建的响应式网站，适配各种设备屏幕。</p>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <div class="project-img">项目截图</div>
-                    <div class="project-content">
-                        <h3>数据可视化平台</h3>
-                        <p>基于React和D3.js的数据可视化工具，帮助用户理解复杂数据。</p>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <div class="project-img">项目截图</div>
-                    <div class="project-content">
-                        <h3>移动应用开发</h3>
-                        <p>使用React Native开发的跨平台移动应用，提供流畅的用户体验。</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-        
-        <footer id="contact">
-            <p>© 2025 我的科幻主页 | 保留所有权利</p>
-            <div class="social-links">
-                <a href="#"><i class="fab fa-github"></i></a>
-                <a href="#"><i class="fab fa-linkedin"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fas fa-envelope"></i></a>
-            </div>
-        </footer>
-    </div>
-    
-    <!-- AI对话框 -->
-    <div class="ai-chat-btn" id="aiChatBtn">
-        <i class="fas fa-robot"></i>
-    </div>
-    
-    <div class="ai-chat-container" id="aiChatContainer">
-        <div class="ai-chat-header">
-            <h3>AI 助手</h3>
-            <button class="ai-chat-close" id="aiChatClose"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="ai-chat-messages" id="aiChatMessages">
-            <div class="message ai">
-                <div class="message-content">你好！我是AI助手，有什么可以帮助你的吗？</div>
-            </div>
-        </div>
-        <div class="ai-chat-input-container">
-            <input type="text" class="ai-chat-input" id="aiChatInput" placeholder="输入你的问题...">
-            <button class="ai-chat-send" id="aiChatSend">发送</button>
-        </div>
-    </div>
+<canvas id="background"></canvas>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const canvas = document.getElementById('background');
-            const ctx = canvas.getContext('2d');
-            
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+<div class="container">
+    <header>
+        <div class="logo">艾合主页</div>
+        <nav>
+            <ul>
+                <li><a href="#home">首页</a></li>
+                <li><a href="#about">关于我</a></li>
+                <li><a href="#skills">技能</a></li>
+                <li><a href="#projects">项目</a></li>
+                <li><a href="#contact">联系</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero" id="home">
+        <h1>欢迎来到我的空间</h1>
+        <p class="tagline">新手开发者 · 创作者 · 未来技术探索者</p>
+        <div>
+            <a href="#about" class="btn">了解更多</a>
+            <a href="#contact" class="btn">联系我</a>
+        </div>
+    </section>
+
+    <section class="about" id="about">
+        <div>
+            <!-- 图片已存在于仓库 -->
+            <img src="images/IMG_20250810_032653.png" alt="个人头像" class="profile-img">
+        </div>
+        <div class="about-text">
+            <h2>关于我</h2>
+            <p>我是一名充满热情的开发者，专注于创造优雅而高效的解决方案。拥有多年的前端和后端开发经验，致力于将复杂问题转化为直观的用户体验。</p>
+            <p>我热爱探索新技术，并相信代码可以改变世界。在我的职业生涯中，我参与过多个大型项目，从概念到部署，积累了丰富的实践经验。</p>
+            <p>除了编码，我还喜欢研究人机交互、用户体验设计，并经常在技术社区分享我的知识和经验。</p>
+        </div>
+    </section>
+
+    <section class="skills" id="skills">
+        <h2>专业技能</h2>
+        <div class="skills-grid">
+            <div class="skill-card"><h3>前端开发</h3><p>HTML5, CSS3, JavaScript, React, Vue.js, TypeScript</p></div>
+            <div class="skill-card"><h3>后端开发</h3><p>Node.js, Python, PHP, MySQL, MongoDB, RESTful APIs</p></div>
+            <div class="skill-card"><h3>UI/UX 设计</h3><p>Figma, Adobe XD, 用户研究, 交互设计, 原型制作</p></div>
+            <div class="skill-card"><h3>其他技能</h3><p>Git, Docker, AWS, 敏捷开发, 项目管理</p></div>
+        </div>
+    </section>
+
+    <section class="projects" id="projects">
+        <h2>我的项目</h2>
+        <div class="project-grid">
+            <div class="project-card">
+                <div class="project-img">项目截图</div>
+                <div class="project-content"><h3>响应式网站设计</h3><p>使用现代前端技术构建的响应式网站，适配各种设备屏幕。</p></div>
+            </div>
+            <div class="project-card">
+                <div class="project-img">项目截图</div>
+                <div class="project-content"><h3>数据可视化平台</h3><p>基于React和D3.js的数据可视化工具，帮助用户理解复杂数据。</p></div>
+            </div>
+            <div class="project-card">
+                <div class="project-img">项目截图</div>
+                <div class="project-content"><h3>移动应用开发</h3><p>使用React Native开发的跨平台移动应用，提供流畅的用户体验。</p></div>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <p>© 2025 我的科幻主页 | 保留所有权利</p>
+        <div class="social-links">
+            <a href="https://github.com/Alheshen" target="_blank"><i class="fab fa-github"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="mailto:your@email.com"><i class="fas fa-envelope"></i></a>
+        </div>
+    </footer>
+</div>
+
+<!-- ==== AI 聊天按钮 ==== -->
+<div class="ai-chat-btn" id="aiChatBtn"><i class="fas fa-robot"></i></div>
+
+<!-- ==== AI 聊天容器 ==== -->
+<div class="ai-chat-container" id="aiChatContainer">
+    <div class="ai-chat-header">
+        <h3>AI 助手（讯飞星火）</h3>
+        <button class="ai-chat-close" id="aiChatClose"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="ai-chat-messages" id="aiChatMessages">
+        <div class="message ai"><div class="message-content">你好！我是讯飞星火 AI，有什么可以帮你？</div></div>
+    </div>
+    <div class="ai-chat-input-container">
+        <input type="text" class="ai-chat-input" id="aiChatInput" placeholder="输入你的问题...">
+        <button class="ai-chat-send" id="aiChatSend">发送</button>
+    </div>
+</div>
+
+<script>
+/* ==================== 粒子背景 ==================== */
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('background');
+    const ctx = canvas.getContext('2d');
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+    resize(); window.addEventListener('resize', resize);
+
+    const PARTICLE_OPACITY = 0.12, TRAIL_OPACITY = 0.3, LINE_OPACITY = 0.22;
+    const PARTICLE_TYPES = {
+        BLUE: {colors:['#0066ff','#00aaff','#00ffff'], size:[1,4], speed:0.12},
+        PURPLE:{colors:['#a200ff','#cc66ff','#e6ccff'], size:[1,3], speed:0.2},
+        GREEN:{colors:['#00cc66','#66ff99','#ccffcc'], size:[1,3], speed:0.15},
+        ORANGE:{colors:['#ff9900','#ffcc66','#ffe6b3'], size:[1,4], speed:0.18},
+        PINK:{colors:['#ff3399','#ff66cc','#ffccff'], size:[1,3], speed:0.16}
+    };
+
+    class Particle{
+        constructor(x,y,type='BLUE'){
+            this.x=x;this.y=y;this.type=type;
+            const c=PARTICLE_TYPES[type];
+            this.color=c.colors[Math.floor(Math.random()*c.colors.length)];
+            this.vx_base=(Math.random()-0.5)*c.speed*1.5;
+            this.vy_base=(Math.random()-0.5)*c.speed*1.5;
+            this.vx=this.vx_base; this.vy=this.vy_base;
+            this.size=Math.random()*(c.size[1]-c.size[0])+c.size[0];
+            this.orbitRadius=Math.random()*30+5;
+            this.orbitAngle=Math.random()*Math.PI*2;
+            this.orbitSpeed=(Math.random()-0.5)*0.005;
+            this.pulseSpeed=Math.random()*0.02+0.005;
+            this.pulsePhase=Math.random()*Math.PI*2;
+            this.baseSize=this.size;
+            this.trail=[]; this.maxTrailLength=3;
+            this.borderStuckTime=0; this.escapeAttempts=0;
+        }
+        update(mouse){
+            // 轨道
+            this.orbitAngle+=this.orbitSpeed;
+            const ox=Math.cos(this.orbitAngle)*this.orbitRadius*0.03;
+            const oy=Math.sin(this.orbitAngle)*this.orbitRadius*0.03;
+
+            // 鼠标排斥
+            let dx=this.x-mouse.x, dy=this.y-mouse.y, dist=Math.hypot(dx,dy);
+            let fx=0,fy=0;
+            if(dist<80&&dist>0){ const force=(80-dist)/80*40; fx=dx/dist*force; fy=dy/dist*force; }
+
+            // 边界强推
+            const br=20, bs=8;
+            if(this.x<br){ fx+=Math.pow((br-this.x)/br,0.5)*bs*1.2; }
+            if(this.x>canvas.width-br){ fx-=Math.pow((this.x-(canvas.width-br))/br,0.5)*bs*1.2; }
+            if(this.y<br){ fy+=Math.pow((br-this.y)/br,0.5)*bs*1.2; }
+            if(this.y>canvas.height-br){ fy-=Math.pow((this.y-(canvas.height-br))/br,0.5)*bs*1.2; }
+
+            this.vx=this.vx_base+ox+fx; this.vy=this.vy_base+oy+fy;
+            this.vx*=0.92; this.vy*=0.92;
+            this.x+=this.vx; this.y+=this.vy;
+
+            // 反弹+逃逸
+            const bounce=2.5;
+            if(this.x<20){this.x=25;this.vx_base=Math.abs(this.vx_base)*bounce+1;this.borderStuckTime++;}
+            else if(this.x>canvas.width-20){this.x=canvas.width-25;this.vx_base=-Math.abs(this.vx_base)*bounce-1;this.borderStuckTime++;}
+            else if(this.y<20){this.y=25;this.vy_base=Math.abs(this.vy_base)*bounce+1;this.borderStuckTime++;}
+            else if(this.y>canvas.height-20){this.y=canvas.height-25;this.vy_base=-Math.abs(this.vy_base)*bounce-1;this.borderStuckTime++;}
+            else this.borderStuckTime=0;
+
+            if(this.borderStuckTime>8){
+                const cx=canvas.width/2, cy=canvas.height/2;
+                const tx=cx-this.x, ty=cy-this.y, td=Math.hypot(tx,ty);
+                if(td>50){
+                    const ef=3+this.escapeAttempts*0.5;
+                    this.vx_base+=tx/td*ef; this.vy_base+=ty/td*ef;
+                }
+                this.escapeAttempts++; if(this.escapeAttempts>3){this.escapeAttempts=0;this.borderStuckTime=0;}
             }
-            
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-            
-            // 透明度参数 - 减少发光效果
-            const PARTICLE_OPACITY = 0.1;
-            const TRAIL_OPACITY = 0.3;
-            const LINE_OPACITY = 0.2;
-            
-            // 彩色粒子 - 使用多种颜色
-            const PARTICLE_TYPES = {
-                BLUE: { colors: ['#0066ff', '#00aaff', '#00ffff'], size: [1, 4], speed: 0.12 },
-                PURPLE: { colors: ['#a200ff', '#cc66ff', '#e6ccff'], size: [1, 3], speed: 0.2 },
-                GREEN: { colors: ['#00cc66', '#66ff99', '#ccffcc'], size: [1, 3], speed: 0.15 },
-                ORANGE: { colors: ['#ff9900', '#ffcc66', '#ffe6b3'], size: [1, 4], speed: 0.18 },
-                PINK: { colors: ['#ff3399', '#ff66cc', '#ffccff'], size: [1, 3], speed: 0.16 }
+
+            // 脉动
+            this.pulsePhase+=this.pulseSpeed;
+            this.size=this.baseSize+Math.sin(this.pulsePhase)*this.baseSize*0.15;
+
+            // 轨迹
+            this.trail.push({x:this.x,y:this.y});
+            if(this.trail.length>this.maxTrailLength) this.trail.shift();
+        }
+        draw(){
+            this.trail.forEach((p,i)=>{
+                ctx.fillStyle=`rgba(${this.hex(this.color)},${i/this.trail.length*TRAIL_OPACITY})`;
+                ctx.beginPath();ctx.arc(p.x,p.y,this.size*(i/this.trail.length),0,Math.PI*2);ctx.fill();
+            });
+            ctx.fillStyle=`rgba(${this.hex(this.color)},${PARTICLE_OPACITY})`;
+            ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();
+            ctx.shadowColor=`rgba(${this.hex(this.color)},${PARTICLE_OPACITY*0.5})`;
+            ctx.shadowBlur=5;ctx.fill();ctx.shadowBlur=0;
+        }
+        hex(c){c=c.slice(1);return `${parseInt(c[0]+c[1],16)},${parseInt(c[2]+c[3],16)},${parseInt(c[4]+c[5],16)}`;}
+    }
+
+    const particles=[];
+    const particleCount=150;
+    const types=Object.keys(PARTICLE_TYPES);
+    const init=()=>{
+        particles.length=0;
+        const margin=80;
+        for(let i=0;i<particleCount;i++){
+            const t=types[Math.floor(Math.random()*types.length)];
+            particles.push(new Particle(
+                Math.random()*(canvas.width-2*margin)+margin,
+                Math.random()*(canvas.height-2*margin)+margin,
+                t
+            ));
+        }
+    };
+    init();
+
+    const mouse={x:-1000,y:-1000};
+    window.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+    window.addEventListener('mouseout',()=>{mouse.x=-1000;mouse.y=-1000;});
+
+    const animate=()=>{
+        ctx.fillStyle='rgba(5,5,15,0.1)';ctx.fillRect(0,0,canvas.width,canvas.height);
+        particles.forEach(p=>{p.update(mouse);p.draw();});
+
+        for(let i=0;i<particles.length;i++){
+            for(let j=i+1;j<particles.length;j++){
+                const dx=particles[i].x-particles[j].x;
+                const dy=particles[i].y-particles[j].y;
+                const d=Math.hypot(dx,dy);
+                if(d<160){
+                    const alpha=(1-d/160)*LINE_OPACITY;
+                    ctx.strokeStyle=`rgba(${particles[i].hex(particles[i].color)},${alpha})`;
+                    ctx.lineWidth=0.3;ctx.beginPath();
+                    ctx.moveTo(particles[i].x,particles[i].y);
+                    ctx.lineTo(particles[j].x,particles[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animate);
+    };
+    animate();
+
+    /* ==================== 讯飞星火 WebSocket AI ==================== */
+    const APPID = 'f0b9fba6';
+    const APIKey = 'b14a01cd9e716535a860497ff606a459';
+    const APISecret = 'YWQ5YWExMjUwZDBiYjBhOWI4YjFlYzRh';
+    const WS_URL = 'wss://maas-api.cn-huabei-1.xf-yun.com/v1.1/chat';
+
+    // 生成签名（HMAC-SHA256）
+    function getAuthUrl() {
+        const date = new Date().toUTCString();
+        const signatureOrigin = `host: maas-api.cn-huabei-1.xf-yun.com\ndate: ${date}\nGET /v1.1/chat HTTP/1.1`;
+        const crypto = window.crypto.subtle;
+        const enc = new TextEncoder();
+        return crypto.importKey('raw', enc.encode(APISecret), {name:'HMAC',hash:'SHA-256'}, false, ['sign'])
+            .then(key => crypto.sign('HMAC', key, enc.encode(signatureOrigin)))
+            .then(sig => btoa(String.fromCharCode(...new Uint8Array(sig))))
+            .then(signature => {
+                const authorization = btoa(JSON.stringify({
+                    api_key: APIKey,
+                    algorithm: 'hmac-sha256',
+                    headers: 'host date request-line',
+                    signature
+                }));
+                return `${WS_URL}?authorization=${authorization}&date=${encodeURIComponent(date)}&host=maas-api.cn-huabei-1.xf-yun.com`;
+            });
+    }
+
+    let ws = null;
+    let conversationHistory = []; // 保留上下文
+
+    function connectWs() {
+        getAuthUrl().then(url => {
+            ws = new WebSocket(url);
+            ws.onopen = () => console.log('WebSocket 已连接');
+            ws.onmessage = e => {
+                const data = JSON.parse(e.data);
+                if (data.header.code !== 0) {
+                    addMessage(`错误：${data.header.message}`, 'ai');
+                    return;
+                }
+                const text = data.payload.choices.text[0].content;
+                appendAIChunk(text);
             };
+            ws.onerror = err => console.error('WS Error', err);
+            ws.onclose = () => console.log('WS 已关闭');
+        }).catch(err => console.error('签名错误', err));
+    }
 
-            class Particle {
-                constructor(x, y, type = 'BLUE') {
-                    this.x = x;
-                    this.y = y;
-                    this.type = type;
-                    this.config = PARTICLE_TYPES[type];
-                    
-                    this.color = this.config.colors[Math.floor(Math.random() * this.config.colors.length)];
-                    
-                    // 基础速度 - 增加初始随机性
-                    this.vx_base = (Math.random()-0.5) * this.config.speed * 1.5;
-                    this.vy_base = (Math.random()-0.5) * this.config.speed * 1.5;
-                    this.vx = this.vx_base;
-                    this.vy = this.vy_base;
-                    
-                    this.size = Math.random() * (this.config.size[1] - this.config.size[0]) + this.config.size[0];
-                    
-                    this.orbitRadius = Math.random() * 30 + 5;
-                    this.orbitAngle = Math.random() * Math.PI * 2;
-                    this.orbitSpeed = (Math.random() - 0.5) * 0.005;
-                    
-                    this.pulseSpeed = Math.random() * 0.02 + 0.005;
-                    this.pulsePhase = Math.random() * Math.PI * 2;
-                    this.baseSize = this.size;
-                    
-                    this.trail = [];
-                    this.maxTrailLength = 3;
-                    
-                    // 边界检测优化
-                    this.borderStuckTime = 0;
-                    this.escapeAttempts = 0;
-                }
-                
-                update(mouse) {
-                    // 轨道运动
-                    this.orbitAngle += this.orbitSpeed;
-                    const orbitX = Math.cos(this.orbitAngle) * this.orbitRadius * 0.03;
-                    const orbitY = Math.sin(this.orbitAngle) * this.orbitRadius * 0.03;
-                    
-                    // 鼠标排斥力
-                    let dx = this.x - mouse.x;
-                    let dy = this.y - mouse.y;
-                    let dist = Math.sqrt(dx*dx + dy*dy);
-                    const influence = 80;
-                    const maxForce = 40;
-                    let fx = 0, fy = 0;
-                    
-                    if(dist < influence && dist > 0){
-                        let force = (influence - dist)/influence * maxForce;
-                        fx = (dx/dist) * force;
-                        fy = (dy/dist) * force;
-                    }
+    // 首次加载即连接
+    connectWs();
 
-                    // 强边界力
-                    let borderForceX = 0, borderForceY = 0;
-                    const borderRange = 20;
-                    const borderStrength = 8.0;
-                    
-                    // 左边界强推力
-                    if(this.x < borderRange) {
-                        const distanceFactor = Math.pow((borderRange - this.x) / borderRange, 0.5);
-                        borderForceX += distanceFactor * borderStrength * 3;
-                    }
-                    // 右边界强推力
-                    if(this.x > canvas.width - borderRange) {
-                        const distanceFactor = Math.pow((this.x - (canvas.width - borderRange)) / borderRange, 0.5);
-                        borderForceX -= distanceFactor * borderStrength * 3;
-                    }
-                    // 上边界强推力
-                    if(this.y < borderRange) {
-                        const distanceFactor = Math.pow((borderRange - this.y) / borderRange, 0.5);
-                        borderForceY += distanceFactor * borderStrength * 3;
-                    }
-                    // 下边界强推力
-                    if(this.y > canvas.height - borderRange) {
-                        const distanceFactor = Math.pow((this.y - (canvas.height - borderRange)) / borderRange, 0.5);
-                        borderForceY -= distanceFactor * borderStrength * 3;
-                    }
+    // ==== 聊天 UI 交互 ====
+    const aiBtn = document.getElementById('aiChatBtn');
+    const aiBox = document.getElementById('aiChatContainer');
+    const closeBtn = document.getElementById('aiChatClose');
+    const msgBox = document.getElementById('aiChatMessages');
+    const input = document.getElementById('aiChatInput');
+    const sendBtn = document.getElementById('aiChatSend');
 
-                    // 更新速度
-                    this.vx = this.vx_base + orbitX + fx + borderForceX;
-                    this.vy = this.vy_base + orbitY + fy + borderForceY;
+    aiBtn.onclick = () => { aiBox.style.display='flex'; aiBtn.style.display='none'; input.focus(); };
+    closeBtn.onclick = () => { aiBox.style.display='none'; aiBtn.style.display='flex'; };
 
-                    // 减小阻尼，让边界力更有效
-                    this.vx *= 0.92;
-                    this.vy *= 0.92;
+    function addMessage(txt, role){
+        const div = document.createElement('div');
+        div.className = `message ${role}`;
+        const c = document.createElement('div');
+        c.className='message-content';
+        c.textContent = txt;
+        div.appendChild(c);
+        msgBox.appendChild(div);
+        msgBox.scrollTop = msgBox.scrollHeight;
+    }
 
-                    // 更新位置
-                    this.x += this.vx;
-                    this.y += this.vy;
+    let currentAI = null; // 正在拼接的 AI 回复
+    function appendAIChunk(chunk){
+        if(!currentAI){
+            currentAI = document.createElement('div');
+            currentAI.className='message ai';
+            const c = document.createElement('div');
+            c.className='message-content';
+            currentAI.appendChild(c);
+            msgBox.appendChild(currentAI);
+        }
+        currentAI.querySelector('.message-content').textContent += chunk;
+        msgBox.scrollTop = msgBox.scrollHeight;
+    }
+    function finishAI(){
+        if(currentAI){
+            conversationHistory.push({role:'assistant',content:currentAI.querySelector('.message-content').textContent});
+            currentAI = null;
+        }
+        hideTyping();
+    }
 
-                    // 强化边界反弹
-                    const bounceStrength = 2.5;
-                    if(this.x < 20) { 
-                        this.x = 25;
-                        this.vx_base = Math.abs(this.vx_base) * bounceStrength + 1.0;
-                        this.vy_base += (Math.random() - 0.5) * 0.5;
-                        this.borderStuckTime++;
-                    } else if(this.x > canvas.width - 20) { 
-                        this.x = canvas.width - 25;
-                        this.vx_base = -Math.abs(this.vx_base) * bounceStrength - 1.0;
-                        this.vy_base += (Math.random() - 0.5) * 0.5;
-                        this.borderStuckTime++;
-                    } else if(this.y < 20) { 
-                        this.y = 25;
-                        this.vy_base = Math.abs(this.vy_base) * bounceStrength + 1.0;
-                        this.vx_base += (Math.random() - 0.5) * 0.5;
-                        this.borderStuckTime++;
-                    } else if(this.y > canvas.height - 20) { 
-                        this.y = canvas.height - 25;
-                        this.vy_base = -Math.abs(this.vy_base) * bounceStrength - 1.0;
-                        this.vx_base += (Math.random() - 0.5) * 0.5;
-                        this.borderStuckTime++;
-                    } else {
-                        this.borderStuckTime = 0;
-                    }
-                    
-                    // 紧急逃逸机制
-                    if(this.borderStuckTime > 8) {
-                        this.escapeAttempts++;
-                        // 强力向中心逃逸
-                        const centerX = canvas.width / 2;
-                        const centerY = canvas.height / 2;
-                        const toCenterX = centerX - this.x;
-                        const toCenterY = centerY - this.y;
-                        const toCenterDist = Math.sqrt(toCenterX*toCenterX + toCenterY*toCenterY);
-                        
-                        if(toCenterDist > 50) {
-                            const escapeForce = 3.0 + this.escapeAttempts * 0.5;
-                            this.vx_base += (toCenterX / toCenterDist) * escapeForce;
-                            this.vy_base += (toCenterY / toCenterDist) * escapeForce;
-                        }
-                        
-                        // 重置计数器
-                        if(this.escapeAttempts > 3) {
-                            this.escapeAttempts = 0;
-                            this.borderStuckTime = 0;
-                        }
-                    }
+    function showTyping(){
+        const el = document.createElement('div');
+        el.className='message ai';
+        el.id='typing';
+        el.innerHTML = `<div class="ai-typing">AI 正在思考<span class="typing-dots"><span></span><span></span><span></span></span></div>`;
+        msgBox.appendChild(el);
+        msgBox.scrollTop = msgBox.scrollHeight;
+    }
+    function hideTyping(){
+        const el = document.getElementById('typing');
+        if(el) el.remove();
+    }
 
-                    // 脉动效果
-                    this.pulsePhase += this.pulseSpeed;
-                    this.size = this.baseSize + Math.sin(this.pulsePhase) * this.baseSize * 0.15;
+    function sendUser(msg){
+        if(!msg.trim()) return;
+        addMessage(msg,'user');
+        conversationHistory.push({role:'user',content:msg});
+        input.value='';
 
-                    // 更新轨迹
-                    this.trail.push({x: this.x, y: this.y});
-                    if(this.trail.length > this.maxTrailLength) {
-                        this.trail.shift();
-                    }
-                }
-                
-                draw() {
-                    for(let i = 0; i < this.trail.length; i++) {
-                        const point = this.trail[i];
-                        const alpha = i / this.trail.length * TRAIL_OPACITY;
-                        ctx.fillStyle = this.hexToRgba(this.color, alpha);
-                        ctx.beginPath();
-                        ctx.arc(point.x, point.y, this.size * (i / this.trail.length), 0, Math.PI * 2);
-                        ctx.fill();
-                    }
-                    
-                    ctx.fillStyle = this.hexToRgba(this.color, PARTICLE_OPACITY);
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // 减少发光效果
-                    ctx.shadowColor = this.hexToRgba(this.color, PARTICLE_OPACITY * 0.5);
-                    ctx.shadowBlur = 5;
-                    ctx.fill();
-                    ctx.shadowBlur = 0;
-                }
-                
-                hexToRgba(hex, alpha) {
-                    hex = hex.replace('#', '');
-                    const r = parseInt(hex.substring(0, 2), 16);
-                    const g = parseInt(hex.substring(2, 4), 16);
-                    const b = parseInt(hex.substring(4, 6), 16);
-                    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-                }
+        showTyping();
+
+        // 构造请求体
+        const payload = {
+            header: {app_id: APPID, uid: 'user123'},
+            parameter: {chat: {domain: 'general', temperature: 0.5}},
+            payload: {
+                message: {text: conversationHistory}
             }
+        };
 
-            let particles = [];
-            // 减少粒子数量，使其更稀疏
-            const particleCount = 150;
-            
-            function initParticles() {
-                particles = [];
-                const types = Object.keys(PARTICLE_TYPES);
-                
-                for(let i = 0; i < particleCount; i++) {
-                    const margin = 80;
-                    const randomType = types[Math.floor(Math.random() * types.length)];
-                    particles.push(new Particle(
-                        Math.random() * (canvas.width - 2 * margin) + margin, 
-                        Math.random() * (canvas.height - 2 * margin) + margin,
-                        randomType
-                    ));
-                }
+        if(ws && ws.readyState===WebSocket.OPEN){
+            ws.send(JSON.stringify(payload));
+        }else{
+            setTimeout(()=>connectWs(),500);
+        }
+    }
+
+    sendBtn.onclick = () => sendUser(input.value);
+    input.onkeydown = e => { if(e.key==='Enter') sendUser(input.value); };
+
+    // 收到完整回复后结束
+    const originalOnMessage = ws ? ws.onmessage : null;
+    //（在上面 onmessage 已处理完片段，实际结束靠 data.payload.choices.status===2）
+    // 为简化，这里直接在收到任何片段后延迟结束（实际项目请监听 status）
+    let lastChunkTime = Date.now();
+    setInterval(()=>{
+        if(currentAI && Date.now()-lastChunkTime>800){
+            finishAI();
+        }
+    },500);
+    // 记录最新 chunk 时间
+    const oldHandler = ws ? ws.onmessage : null;
+    if(oldHandler){
+        ws.onmessage = e=>{
+            lastChunkTime = Date.now();
+            oldHandler(e);
+            const d=JSON.parse(e.data);
+            if(d.payload && d.payload.choices && d.payload.choices.status===2){
+                setTimeout(finishAI,300);
             }
-            
-            initParticles();
+        };
+    }
 
-            const mouse = {x: -1000, y: -1000};
-            window.addEventListener('mousemove', e => { 
-                mouse.x = e.clientX; 
-                mouse.y = e.clientY; 
-            });
-            window.addEventListener('mouseout', e => { 
-                mouse.x = -1000; 
-                mouse.y = -1000; 
-            });
-
-            function animate() {
-                ctx.fillStyle = 'rgba(5, 5, 15, 0.1)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                for(let p of particles) { 
-                    p.update(mouse); 
-                    p.draw(); 
-                }
-
-                for(let i = 0; i < particles.length; i++) {
-                    for(let j = i + 1; j < particles.length; j++) {
-                        let dx = particles[i].x - particles[j].x;
-                        let dy = particles[i].y - particles[j].y;
-                        let dist = Math.sqrt(dx*dx + dy*dy);
-                        
-                        if(dist < 160) {
-                            const alpha = (1 - dist/160) * LINE_OPACITY;
-                            // 彩色连接线 - 根据粒子颜色混合
-                            let lineColor = particles[i].color;
-                            
-                            ctx.strokeStyle = hexToRgba(lineColor, alpha);
-                            ctx.lineWidth = 0.3;
-                            ctx.beginPath();
-                            ctx.moveTo(particles[i].x, particles[i].y);
-                            ctx.lineTo(particles[j].x, particles[j].y);
-                            ctx.stroke();
-                        }
-                    }
-                }
-
-                requestAnimationFrame(animate);
-            }
-
-            function hexToRgba(hex, alpha) {
-                hex = hex.replace('#', '');
-                const r = parseInt(hex.substring(0, 2), 16);
-                const g = parseInt(hex.substring(2, 4), 16);
-                const b = parseInt(hex.substring(4, 6), 16);
-                return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-            }
-
-            animate();
-            
-            // ---------- AI对话框功能 ----------
-            const aiChatBtn = document.getElementById('aiChatBtn');
-            const aiChatContainer = document.getElementById('aiChatContainer');
-            const aiChatClose = document.getElementById('aiChatClose');
-            const aiChatMessages = document.getElementById('aiChatMessages');
-            const aiChatInput = document.getElementById('aiChatInput');
-            const aiChatSend = document.getElementById('aiChatSend');
-
-            // 完整的AI对话功能 - 使用模拟数据
-            let conversationHistory = [];
-            
-            // 模拟AI回复数据
-            const aiResponses = {
-                "你好": "你好！我是AI助手，很高兴为你服务。",
-                "你是谁": "我是AI助手，一个基于人工智能的对话助手，可以帮助你解答问题、提供建议和进行有趣的对话。",
-                "你会做什么": "我可以回答各种问题、提供编程帮助、解释概念、进行创意写作、翻译语言等等。你有什么具体需要帮助的吗？",
-                "编程": "编程是一个创造性的过程，涉及使用编程语言编写指令来告诉计算机执行特定任务。我可以帮助你解决编程问题、解释概念或提供代码示例。",
-                "前端开发": "前端开发涉及创建用户界面和用户体验。主要技术包括HTML、CSS和JavaScript，以及React、Vue等框架。",
-                "谢谢": "不客气！如果还有其他问题，随时可以问我。",
-                "默认": "这是一个模拟回复。在实际使用中，这里会显示来自讯飞星火AI的真实回复。"
-            };
-
-            // 打开对话框
-            aiChatBtn.addEventListener('click', () => {
-                aiChatContainer.style.display = 'flex';
-                aiChatBtn.style.display = 'none';
-                aiChatInput.focus();
-            });
-
-            // 关闭对话框
-            aiChatClose.addEventListener('click', () => {
-                aiChatContainer.style.display = 'none';
-                aiChatBtn.style.display = 'flex';
-            });
-
-            // 发送消息
-            function sendMessage() {
-                const message = aiChatInput.value.trim();
-                if (!message) return;
-
-                // 添加用户消息到界面
-                addMessage(message, 'user');
-                aiChatInput.value = '';
-                
-                // 显示AI正在输入
-                showTypingIndicator();
-                
-                // 添加到对话历史
-                conversationHistory.push({
-                    role: 'user',
-                    content: message
-                });
-
-                // 模拟AI回复
-                setTimeout(() => {
-                    generateAIResponse(message);
-                }, 1000 + Math.random() * 1000);
-            }
-
-            // 点击发送按钮
-            aiChatSend.addEventListener('click', sendMessage);
-
-            // 按Enter发送
-            aiChatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
-            });
-
-            // 添加消息到界面
-            function addMessage(content, sender) {
-                const messageElement = document.createElement('div');
-                messageElement.className = `message ${sender}`;
-                
-                const contentElement = document.createElement('div');
-                contentElement.className = 'message-content';
-                contentElement.textContent = content;
-                
-                messageElement.appendChild(contentElement);
-                aiChatMessages.appendChild(messageElement);
-                
-                // 滚动到底部
-                aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-            }
-
-            // 显示输入指示器
-            function showTypingIndicator() {
-                const typingElement = document.createElement('div');
-                typingElement.className = 'message ai';
-                typingElement.id = 'typing-indicator';
-                
-                const typingContent = document.createElement('div');
-                typingContent.className = 'ai-typing';
-                typingContent.innerHTML = 'AI正在思考<span class="typing-dots"><span></span><span></span><span></span></span>';
-                
-                typingElement.appendChild(typingContent);
-                aiChatMessages.appendChild(typingElement);
-                aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-            }
-
-            // 隐藏输入指示器
-            function hideTypingIndicator() {
-                const typingElement = document.getElementById('typing-indicator');
-                if (typingElement) {
-                    typingElement.remove();
-                }
-            }
-
-            // 生成AI回复
-            function generateAIResponse(userMessage) {
-                hideTypingIndicator();
-                
-                // 查找匹配的回复，如果没有则使用默认回复
-                let response = aiResponses["默认"];
-                for (const [key, value] of Object.entries(aiResponses)) {
-                    if (userMessage.toLowerCase().includes(key.toLowerCase())) {
-                        response = value;
-                        break;
-                    }
-                }
-                
-                // 添加AI回复到界面
-                addMessage(response, 'ai');
-                
-                // 添加到对话历史
-                conversationHistory.push({
-                    role: 'assistant',
-                    content: response
-                });
-            }
-        });
-    </script>
+});
+</script>
 </body>
 </html>
