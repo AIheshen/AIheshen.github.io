@@ -382,6 +382,11 @@
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
             
+            // 透明度参数 - 明确设置为50%
+            const PARTICLE_OPACITY = 0.3; // 粒子透明度
+            const TRAIL_OPACITY = 0.2;    // 轨迹透明度
+            const LINE_OPACITY = 0.1;     // 连线透明度
+            
             // 粒子类型定义
             const PARTICLE_TYPES = {
                 NORMAL: { colors: ['#00ffff', '#00aaff'], size: [1, 4], speed: 0.12 },
@@ -520,27 +525,41 @@
                 }
                 
                 draw() {
-                    // 绘制轨迹 - 透明度降低到50%
+                    // 绘制轨迹 - 使用明确的透明度参数
                     for(let i = 0; i < this.trail.length; i++) {
                         const point = this.trail[i];
-                        const alpha = i / this.trail.length * 0.25; // 调整为50%透明度
-                        ctx.fillStyle = this.color.replace(')', `, ${alpha})`).replace('rgb', 'rgba');
+                        const alpha = i / this.trail.length * TRAIL_OPACITY;
+                        ctx.fillStyle = this.hexToRgba(this.color, alpha);
                         ctx.beginPath();
                         ctx.arc(point.x, point.y, this.size * (i / this.trail.length), 0, Math.PI * 2);
                         ctx.fill();
                     }
                     
-                    // 绘制粒子 - 透明度降低到50%
-                    ctx.fillStyle = this.color.replace(')', ', 0.5)').replace('rgb', 'rgba');
+                    // 绘制粒子 - 使用明确的透明度参数
+                    ctx.fillStyle = this.hexToRgba(this.color, PARTICLE_OPACITY);
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                     ctx.fill();
                     
-                    // 发光效果 - 强度减小
-                    ctx.shadowColor = this.color.replace(')', ', 0.5)').replace('rgb', 'rgba');
+                    // 发光效果 - 使用明确的透明度参数
+                    ctx.shadowColor = this.hexToRgba(this.color, PARTICLE_OPACITY);
                     ctx.shadowBlur = 8;
                     ctx.fill();
                     ctx.shadowBlur = 0;
+                }
+                
+                // 辅助函数：将十六进制颜色转换为RGBA格式
+                hexToRgba(hex, alpha) {
+                    // 移除#号
+                    hex = hex.replace('#', '');
+                    
+                    // 解析RGB值
+                    const r = parseInt(hex.substring(0, 2), 16);
+                    const g = parseInt(hex.substring(2, 4), 16);
+                    const b = parseInt(hex.substring(4, 6), 16);
+                    
+                    // 返回RGBA字符串
+                    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
                 }
             }
 
@@ -586,7 +605,7 @@
                     p.draw(); 
                 }
 
-                // 粒子连线 - 透明度降低到50%
+                // 粒子连线 - 使用明确的透明度参数
                 for(let i = 0; i < particles.length; i++) {
                     for(let j = i + 1; j < particles.length; j++) {
                         let dx = particles[i].x - particles[j].x;
@@ -594,7 +613,7 @@
                         let dist = Math.sqrt(dx*dx + dy*dy);
                         
                         if(dist < 80) {
-                            const alpha = 1 - dist/80;
+                            const alpha = (1 - dist/80) * LINE_OPACITY;
                             let lineColor;
                             
                             if(particles[i].type === particles[j].type) {
@@ -603,8 +622,8 @@
                                 lineColor = '#ffffff';
                             }
                             
-                            // 连线透明度降低到50%
-                            ctx.strokeStyle = lineColor.replace(')', `, ${alpha * 0.25})`).replace('rgb', 'rgba');
+                            // 连线透明度使用明确的参数
+                            ctx.strokeStyle = hexToRgba(lineColor, alpha);
                             ctx.lineWidth = 0.3;
                             ctx.beginPath();
                             ctx.moveTo(particles[i].x, particles[i].y);
@@ -617,9 +636,22 @@
                 requestAnimationFrame(animate);
             }
 
+            // 全局辅助函数：将十六进制颜色转换为RGBA格式
+            function hexToRgba(hex, alpha) {
+                // 移除#号
+                hex = hex.replace('#', '');
+                
+                // 解析RGB值
+                const r = parseInt(hex.substring(0, 2), 16);
+                const g = parseInt(hex.substring(2, 4), 16);
+                const b = parseInt(hex.substring(4, 6), 16);
+                
+                // 返回RGBA字符串
+                return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            }
+
             animate();
         });
     </script>
 </body>
 </html>
-
