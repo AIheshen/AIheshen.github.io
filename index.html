@@ -8,7 +8,7 @@
 /* 基础样式 */
 * { margin:0; padding:0; box-sizing:border-box; }
 html, body { width:100%; height:100%; overflow:hidden; font-family:'Segoe UI', sans-serif; background:#0a0a0a; color:#fff; }
-canvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; display:block; }
+canvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; display:block; pointer-events:none; }
 
 /* 页面内容 */
 .content {
@@ -41,12 +41,6 @@ p {
 .buttons a:hover {
     background:#00ffff;
     color:#0a0a0a;
-}
-
-/* 粒子连线效果 */
-.line {
-    stroke: #00ffff;
-    stroke-opacity: 0.2;
 }
 </style>
 </head>
@@ -87,21 +81,23 @@ class Particle {
         let dx = this.x - mouse.x;
         let dy = this.y - mouse.y;
         let dist = Math.sqrt(dx*dx + dy*dy);
-        const influence = 120; // 鼠标作用半径
-        const maxForce = 3;
+        const influence = 200; // 鼠标作用半径
+        const maxForce = 6;    // 推动力
         if(dist < influence){
             let force = (influence - dist)/influence * maxForce;
             this.vx += (dx/dist) * force;
             this.vy += (dy/dist) * force;
         }
-        this.vx *= 0.92; // 阻尼
-        this.vy *= 0.92;
+        this.vx *= 0.96;
+        this.vy *= 0.96;
         this.x += this.vx;
         this.y += this.vy;
 
         // 边界反弹
-        if(this.x < 0 || this.x > canvas.width) this.vx *= -1;
-        if(this.y < 0 || this.y > canvas.height) this.vy *= -1;
+        if(this.x < 0) { this.x=0; this.vx*=-1; }
+        if(this.x > canvas.width) { this.x=canvas.width; this.vx*=-1; }
+        if(this.y < 0) { this.y=0; this.vy*=-1; }
+        if(this.y > canvas.height) { this.y=canvas.height; this.vy*=-1; }
     }
     draw() {
         ctx.fillStyle = '#00ffff';
@@ -113,7 +109,7 @@ class Particle {
 
 // 创建粒子
 const particles = [];
-const particleCount = 180;
+const particleCount = 200;
 for(let i=0;i<particleCount;i++){
     particles.push(new Particle(Math.random()*canvas.width, Math.random()*canvas.height));
 }
@@ -130,11 +126,7 @@ function animate(){
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
     // 更新并绘制粒子
-    for(let i=0;i<particles.length;i++){
-        const p = particles[i];
-        p.update(mouse);
-        p.draw();
-    }
+    for(let p of particles){ p.update(mouse); p.draw(); }
 
     // 粒子连线
     for(let i=0;i<particles.length;i++){
@@ -142,8 +134,8 @@ function animate(){
             let dx = particles[i].x - particles[j].x;
             let dy = particles[i].y - particles[j].y;
             let dist = Math.sqrt(dx*dx + dy*dy);
-            if(dist < 100){
-                ctx.strokeStyle = `rgba(0,255,255,${1 - dist/100})`;
+            if(dist<100){
+                ctx.strokeStyle = `rgba(0,255,255,${1-dist/100})`;
                 ctx.beginPath();
                 ctx.moveTo(particles[i].x, particles[i].y);
                 ctx.lineTo(particles[j].x, particles[j].y);
