@@ -383,11 +383,10 @@
             window.addEventListener('resize', resizeCanvas);
             
             // 透明度参数
-            const PARTICLE_OPACITY = 0.2; // 粒子透明度50%
-            const TRAIL_OPACITY = 0.7;    // 轨迹透明度
-            const LINE_OPACITY = 0.5;     // 连线透明度
+            const PARTICLE_OPACITY = 0.2;
+            const TRAIL_OPACITY = 0.7;
+            const LINE_OPACITY = 0.5;
             
-            // 粒子类型定义 - 使用浅色
             const PARTICLE_TYPES = {
                 NORMAL: { colors: ['#e6f7ff', '#ccf2ff', '#b3ecff'], size: [1, 4], speed: 0.12 },
                 FAST: { colors: ['#ffe6f2', '#ffccf2', '#ffb3ec'], size: [1, 3], speed: 0.2 }
@@ -400,38 +399,30 @@
                     this.type = type;
                     this.config = PARTICLE_TYPES[type];
                     
-                    // 随机选择颜色
                     this.color = this.config.colors[Math.floor(Math.random() * this.config.colors.length)];
                     
-                    // 基础速度
-                    this.vx_base = (Math.random()-0.5) * this.config.speed;
-                    this.vy_base = (Math.random()-0.5) * this.config.speed;
+                    // 基础速度 - 增加初始随机性
+                    this.vx_base = (Math.random()-0.5) * this.config.speed * 1.5;
+                    this.vy_base = (Math.random()-0.5) * this.config.speed * 1.5;
                     this.vx = this.vx_base;
                     this.vy = this.vy_base;
                     
-                    // 粒子大小
                     this.size = Math.random() * (this.config.size[1] - this.config.size[0]) + this.config.size[0];
                     
-                    // 轨道运动参数
                     this.orbitRadius = Math.random() * 30 + 5;
                     this.orbitAngle = Math.random() * Math.PI * 2;
                     this.orbitSpeed = (Math.random() - 0.5) * 0.005;
                     
-                    // 脉动效果
                     this.pulseSpeed = Math.random() * 0.02 + 0.005;
                     this.pulsePhase = Math.random() * Math.PI * 2;
                     this.baseSize = this.size;
                     
-                    // 轨迹效果
                     this.trail = [];
                     this.maxTrailLength = 3;
                     
-                    // 边界停留时间计数器
+                    // 边界检测优化
                     this.borderStuckTime = 0;
-                    
-                    // 中心吸引力参数
-                    this.centerAttractionActive = false;
-                    this.activationTime = 0;
+                    this.escapeAttempts = 0;
                 }
                 
                 update(mouse) {
@@ -440,11 +431,11 @@
                     const orbitX = Math.cos(this.orbitAngle) * this.orbitRadius * 0.03;
                     const orbitY = Math.sin(this.orbitAngle) * this.orbitRadius * 0.03;
                     
-                    // 鼠标排斥力 - 范围缩小一半
+                    // 鼠标排斥力
                     let dx = this.x - mouse.x;
                     let dy = this.y - mouse.y;
                     let dist = Math.sqrt(dx*dx + dy*dy);
-                    const influence = 100; 
+                    const influence = 100;
                     const maxForce = 25;
                     let fx = 0, fy = 0;
                     
@@ -454,43 +445,92 @@
                         fy = (dy/dist) * force;
                     }
 
-                    // 弹性边界 - 增强边界斥力防止堆积
+                    // ==================== 核心修复：超级强边界力 ====================
                     let borderForceX = 0, borderForceY = 0;
-                    const borderRange = 30; // 增加边界范围
-                    const borderStrength = 2.0; // 增强边界强度
+                    const borderRange = 60;        // 扩大边界检测范围
+                    const borderStrength = 8.0;    // 大幅增强边界推力（原来是2.0）
                     
-                    // 左边界弹性
+                    // 左边界强推力
                     if(this.x < borderRange) {
-                        const distanceFactor = (borderRange - this.x) / borderRange;
-                        borderForceX += distanceFactor * borderStrength;
+                        const distanceFactor = Math.pow((borderRange - this.x) / borderRange, 0.5);
+                        borderForceX += distanceFactor * borderStrength * 1.5;
                     }
-                    // 右边界弹性
+                    // 右边界强推力
                     if(this.x > canvas.width - borderRange) {
-                        const distanceFactor = (this.x - (canvas.width - borderRange)) / borderRange;
-                        borderForceX -= distanceFactor * borderStrength;
+                        const distanceFactor = Math.pow((this.x - (canvas.width - borderRange)) / borderRange, 0.5);
+                        borderForceX -= distanceFactor * borderStrength * 1.5;
                     }
-                    // 上边界弹性
+                    // 上边界强推力
                     if(this.y < borderRange) {
-                        const distanceFactor = (borderRange - this.y) / borderRange;
-                        borderForceY += distanceFactor * borderStrength;
+                        const distanceFactor = Math.pow((borderRange - this.y) / borderRange, 0.5);
+                        borderForceY += distanceFactor * borderStrength * 1.5;
                     }
-                    // 下边界弹性
+                    // 下边界强推力
                     if(this.y > canvas.height - borderRange) {
-                        const distanceFactor = (this.y - (canvas.height - borderRange)) / borderRange;
-                        borderForceY -= distanceFactor * borderStrength;
+                        const distanceFactor = Math.pow((this.y - (canvas.height - borderRange)) / borderRange, 0.5);
+                        borderForceY -= distanceFactor * borderStrength * 1.5;
                     }
 
-                    // 更新总速度 = 基础漂移 + 轨道运动 + 鼠标作用 + 边界弹性
+                    // 更新速度
                     this.vx = this.vx_base + orbitX + fx + borderForceX;
                     this.vy = this.vy_base + orbitY + fy + borderForceY;
 
-                    // 增加阻尼，使运动更平稳
-                    this.vx *= 0.95;
-                    this.vy *= 0.95;
+                    // 减小阻尼，让边界力更有效
+                    this.vx *= 0.92;
+                    this.vy *= 0.92;
 
                     // 更新位置
                     this.x += this.vx;
                     this.y += this.vy;
+
+                    // ==================== 强化边界反弹 ====================
+                    const bounceStrength = 2.5;  // 增强反弹（原来1.2）
+                    if(this.x < 20) { 
+                        this.x = 25;
+                        this.vx_base = Math.abs(this.vx_base) * bounceStrength + 1.0;  // 额外向内推力
+                        this.vy_base += (Math.random() - 0.5) * 0.5;  // 添加垂直扰动
+                        this.borderStuckTime++;
+                    } else if(this.x > canvas.width - 20) { 
+                        this.x = canvas.width - 25;
+                        this.vx_base = -Math.abs(this.vx_base) * bounceStrength - 1.0;
+                        this.vy_base += (Math.random() - 0.5) * 0.5;
+                        this.borderStuckTime++;
+                    } else if(this.y < 20) { 
+                        this.y = 25;
+                        this.vy_base = Math.abs(this.vy_base) * bounceStrength + 1.0;
+                        this.vx_base += (Math.random() - 0.5) * 0.5;
+                        this.borderStuckTime++;
+                    } else if(this.y > canvas.height - 20) { 
+                        this.y = canvas.height - 25;
+                        this.vy_base = -Math.abs(this.vy_base) * bounceStrength - 1.0;
+                        this.vx_base += (Math.random() - 0.5) * 0.5;
+                        this.borderStuckTime++;
+                    } else {
+                        this.borderStuckTime = 0;
+                    }
+                    
+                    // ==================== 紧急逃逸机制 ====================
+                    if(this.borderStuckTime > 8) {  // 降低触发阈值
+                        this.escapeAttempts++;
+                        // 强力向中心逃逸
+                        const centerX = canvas.width / 2;
+                        const centerY = canvas.height / 2;
+                        const toCenterX = centerX - this.x;
+                        const toCenterY = centerY - this.y;
+                        const toCenterDist = Math.sqrt(toCenterX*toCenterX + toCenterY*toCenterY);
+                        
+                        if(toCenterDist > 50) {  // 防止在中心过度加速
+                            const escapeForce = 3.0 + this.escapeAttempts * 0.5;
+                            this.vx_base += (toCenterX / toCenterDist) * escapeForce;
+                            this.vy_base += (toCenterY / toCenterDist) * escapeForce;
+                        }
+                        
+                        // 重置计数器
+                        if(this.escapeAttempts > 3) {
+                            this.escapeAttempts = 0;
+                            this.borderStuckTime = 0;
+                        }
+                    }
 
                     // 脉动效果
                     this.pulsePhase += this.pulseSpeed;
@@ -501,66 +541,9 @@
                     if(this.trail.length > this.maxTrailLength) {
                         this.trail.shift();
                     }
-
-                    // 弹性边界反弹 - 增强反弹效果防止堆积
-                    const bounceStrength = 1.2; // 增加反弹强度
-                    if(this.x < 0) { 
-                        this.x = 1; 
-                        this.vx_base = Math.abs(this.vx_base) * bounceStrength;
-                        this.borderStuckTime++;
-                    } else if(this.x > canvas.width) { 
-                        this.x = canvas.width - 1; 
-                        this.vx_base = -Math.abs(this.vx_base) * bounceStrength;
-                        this.borderStuckTime++;
-                    } else if(this.y < 0) { 
-                        this.y = 1; 
-                        this.vy_base = Math.abs(this.vy_base) * bounceStrength;
-                        this.borderStuckTime++;
-                    } else if(this.y > canvas.height) { 
-                        this.y = canvas.height - 1; 
-                        this.vy_base = -Math.abs(this.vy_base) * bounceStrength;
-                        this.borderStuckTime++;
-                    } else {
-                        this.borderStuckTime = 0;
-                    }
-                    
-                    // 如果粒子在边界停留时间过长，激活中心吸引力
-                    if(this.borderStuckTime > 20) {
-                        this.centerAttractionActive = true;
-                        this.activationTime = 0;
-                        this.borderStuckTime = 0;
-                    }
-                    
-                    // 中心吸引力逻辑
-                    if(this.centerAttractionActive) {
-                        this.activationTime++;
-                        const centerX = canvas.width / 2;
-                        const centerY = canvas.height / 2;
-                        const toCenterX = centerX - this.x;
-                        const toCenterY = centerY - this.y;
-                        const toCenterDist = Math.sqrt(toCenterX*toCenterX + toCenterY*toCenterY);
-                        
-                        if(toCenterDist > 0) {
-                            // 吸引强度随时间线性增加，最大0.8
-                            const centerForce = Math.min(0.8, 0.02 * this.activationTime);
-                            this.vx_base += (toCenterX / toCenterDist) * centerForce;
-                            this.vy_base += (toCenterY / toCenterDist) * centerForce;
-                            
-                            // 如果粒子足够接近中心（距离 < 100），关闭吸引
-                            if(toCenterDist < 100) {
-                                this.centerAttractionActive = false;
-                            }
-                        }
-                        
-                        // 超时关闭吸引（防止永久吸引）
-                        if(this.activationTime > 100) {
-                            this.centerAttractionActive = false;
-                        }
-                    }
                 }
                 
                 draw() {
-                    // 绘制轨迹
                     for(let i = 0; i < this.trail.length; i++) {
                         const point = this.trail[i];
                         const alpha = i / this.trail.length * TRAIL_OPACITY;
@@ -570,35 +553,26 @@
                         ctx.fill();
                     }
                     
-                    // 绘制粒子
                     ctx.fillStyle = this.hexToRgba(this.color, PARTICLE_OPACITY);
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                     ctx.fill();
                     
-                    // 发光效果
                     ctx.shadowColor = this.hexToRgba(this.color, PARTICLE_OPACITY);
                     ctx.shadowBlur = 8;
                     ctx.fill();
                     ctx.shadowBlur = 0;
                 }
                 
-                // 辅助函数：将十六进制颜色转换为RGBA格式
                 hexToRgba(hex, alpha) {
-                    // 移除#号
                     hex = hex.replace('#', '');
-                    
-                    // 解析RGB值
                     const r = parseInt(hex.substring(0, 2), 16);
                     const g = parseInt(hex.substring(2, 4), 16);
                     const b = parseInt(hex.substring(4, 6), 16);
-                    
-                    // 返回RGBA字符串
                     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
                 }
             }
 
-            // 创建粒子数组
             let particles = [];
             const particleCount = 400;
             
@@ -607,20 +581,17 @@
                 const types = Object.keys(PARTICLE_TYPES);
                 
                 for(let i = 0; i < particleCount; i++) {
-                    const type = types[Math.floor(Math.random() * types.length)];
-                    // 避免在边界初始化粒子
-                    const margin = 50;
+                    const margin = 80;  // 增加初始化边距
                     particles.push(new Particle(
                         Math.random() * (canvas.width - 2 * margin) + margin, 
                         Math.random() * (canvas.height - 2 * margin) + margin,
-                        type
+                        types[Math.floor(Math.random() * types.length)]
                     ));
                 }
             }
             
             initParticles();
 
-            // 鼠标位置
             const mouse = {x: -1000, y: -1000};
             window.addEventListener('mousemove', e => { 
                 mouse.x = e.clientX; 
@@ -632,34 +603,24 @@
             });
 
             function animate() {
-                // 使用更透明的背景，创造更柔和的轨迹效果
                 ctx.fillStyle = 'rgba(5, 5, 15, 0.1)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // 更新和绘制粒子
                 for(let p of particles) { 
                     p.update(mouse); 
                     p.draw(); 
                 }
 
-                // 粒子连线 - 连接线长度翻倍 (从80改为160)
                 for(let i = 0; i < particles.length; i++) {
                     for(let j = i + 1; j < particles.length; j++) {
                         let dx = particles[i].x - particles[j].x;
                         let dy = particles[i].y - particles[j].y;
                         let dist = Math.sqrt(dx*dx + dy*dy);
                         
-                        if(dist < 160) { // 连线距离翻倍
+                        if(dist < 160) {
                             const alpha = (1 - dist/160) * LINE_OPACITY;
-                            let lineColor;
+                            let lineColor = particles[i].type === particles[j].type ? particles[i].color : '#ffffff';
                             
-                            if(particles[i].type === particles[j].type) {
-                                lineColor = particles[i].color;
-                            } else {
-                                lineColor = '#ffffff';
-                            }
-                            
-                            // 连线透明度
                             ctx.strokeStyle = hexToRgba(lineColor, alpha);
                             ctx.lineWidth = 0.3;
                             ctx.beginPath();
@@ -673,17 +634,11 @@
                 requestAnimationFrame(animate);
             }
 
-            // 全局辅助函数：将十六进制颜色转换为RGBA格式
             function hexToRgba(hex, alpha) {
-                // 移除#号
                 hex = hex.replace('#', '');
-                
-                // 解析RGB值
                 const r = parseInt(hex.substring(0, 2), 16);
                 const g = parseInt(hex.substring(2, 4), 16);
                 const b = parseInt(hex.substring(4, 6), 16);
-                
-                // 返回RGBA字符串
                 return `rgba(${r}, ${g}, ${b}, ${alpha})`;
             }
 
