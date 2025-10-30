@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIheshen 的炫酷网站</title>
+    <style>
+        /* 全屏背景 */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* 动态背景星空 */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* 主内容居中 */
+        .content {
+            position: relative;
+            z-index: 10;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            text-align: center;
+            text-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        h1 {
+            font-size: 4em;
+            margin: 0;
+        }
+
+        p {
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+
+        a {
+            color: #00ffff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        a:hover {
+            color: #ff00ff;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="stars"></canvas>
+    <div class="content">
+        <h1>欢迎来到 AIheshen</h1>
+        <p>炫酷的 GitHub Pages 主页</p>
+        <p><a href="https://github.com/AIheshen" target="_blank">访问我的 GitHub</a></p>
+    </div>
+
+    <script>
+        // 星空效果
+        const canvas = document.getElementById('stars');
+        const ctx = canvas.getContext('2d');
+        let w = canvas.width = window.innerWidth;
+        let h = canvas.height = window.innerHeight;
+
+        const stars = [];
+        const numStars = 200;
+
+        function initStars() {
+            for(let i=0;i<numStars;i++){
+                stars.push({
+                    x: Math.random()*w,
+                    y: Math.random()*h,
+                    r: Math.random()*1.5,
+                    d: Math.random()*2
+                });
+            }
+        }
+
+        function drawStars(){
+            ctx.clearRect(0,0,w,h);
+            ctx.fillStyle = "#fff";
+            ctx.shadowBlur = 5;
+            ctx.shadowColor = "#fff";
+            for(let i=0;i<numStars;i++){
+                let s = stars[i];
+                ctx.beginPath();
+                ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+                ctx.fill();
+            }
+            moveStars();
+        }
+
+        let angle = 0;
+        function moveStars(){
+            angle += 0.01;
+            for(let i=0;i<numStars;i++){
+                let s = stars[i];
+                s.y += Math.cos(angle+s.d)+0.5;
+                s.x += Math.sin(angle);
+                if(s.x > w) s.x = 0;
+                if(s.x < 0) s.x = w;
+                if(s.y > h) s.y = 0;
+            }
+        }
+
+        function animate(){
+            drawStars();
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize',()=>{
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        });
+
+        initStars();
+        animate();
+    </script>
+</body>
+</html>
