@@ -420,6 +420,9 @@
                     // 轨迹效果
                     this.trail = [];
                     this.maxTrailLength = 3; // 进一步缩短轨迹长度
+                    
+                    // 边界停留时间计数器
+                    this.borderStuckTime = 0;
                 }
                 
                 update(mouse) {
@@ -442,9 +445,31 @@
                         fy = (dy/dist) * force;
                     }
 
-                    // 更新总速度 = 基础漂移 + 轨道运动 + 鼠标作用
-                    this.vx = this.vx_base + orbitX + fx;
-                    this.vy = this.vy_base + orbitY + fy;
+                    // 边界斥力 - 防止粒子堆积在边角
+                    let borderForceX = 0, borderForceY = 0;
+                    const borderRange = 50; // 边界斥力作用范围
+                    const borderStrength = 0.5; // 边界斥力强度
+                    
+                    // 左边界斥力
+                    if(this.x < borderRange) {
+                        borderForceX += (borderRange - this.x) / borderRange * borderStrength;
+                    }
+                    // 右边界斥力
+                    if(this.x > canvas.width - borderRange) {
+                        borderForceX -= (this.x - (canvas.width - borderRange)) / borderRange * borderStrength;
+                    }
+                    // 上边界斥力
+                    if(this.y < borderRange) {
+                        borderForceY += (borderRange - this.y) / borderRange * borderStrength;
+                    }
+                    // 下边界斥力
+                    if(this.y > canvas.height - borderRange) {
+                        borderForceY -= (this.y - (canvas.height - borderRange)) / borderRange * borderStrength;
+                    }
+
+                    // 更新总速度 = 基础漂移 + 轨道运动 + 鼠标作用 + 边界斥力
+                    this.vx = this.vx_base + orbitX + fx + borderForceX;
+                    this.vy = this.vy_base + orbitY + fy + borderForceY;
 
                     // 增加阻尼，使运动更平稳
                     this.vx *= 0.95;
@@ -465,21 +490,32 @@
                     }
 
                     // 边界反弹 - 反弹力度减小
+                    const bounceStrength = 0.5;
                     if(this.x < 0) { 
                         this.x = 0; 
-                        this.vx_base = Math.abs(this.vx_base) * 0.5;
-                    }
-                    if(this.x > canvas.width) { 
+                        this.vx_base = Math.abs(this.vx_base) * bounceStrength;
+                        this.borderStuckTime++;
+                    } else if(this.x > canvas.width) { 
                         this.x = canvas.width; 
-                        this.vx_base = -Math.abs(this.vx_base) * 0.5;
-                    }
-                    if(this.y < 0) { 
+                        this.vx_base = -Math.abs(this.vx_base) * bounceStrength;
+                        this.borderStuckTime++;
+                    } else if(this.y < 0) { 
                         this.y = 0; 
-                        this.vy_base = Math.abs(this.vy_base) * 0.5;
-                    }
-                    if(this.y > canvas.height) { 
+                        this.vy_base = Math.abs(this.vy_base) * bounceStrength;
+                        this.borderStuckTime++;
+                    } else if(this.y > canvas.height) { 
                         this.y = canvas.height; 
-                        this.vy_base = -Math.abs(this.vy_base) * 0.5;
+                        this.vy_base = -Math.abs(this.vy_base) * bounceStrength;
+                        this.borderStuckTime++;
+                    } else {
+                        this.borderStuckTime = 0;
+                    }
+                    
+                    // 如果粒子在边界停留时间过长，给它一个随机方向的速度
+                    if(this.borderStuckTime > 60) { // 大约1秒后
+                        this.vx_base = (Math.random()-0.5) * this.config.speed * 2;
+                        this.vy_base = (Math.random()-0.5) * this.config.speed * 2;
+                        this.borderStuckTime = 0;
                     }
                 }
                 
@@ -585,6 +621,3 @@
     </script>
 </body>
 </html>
-
-
-
