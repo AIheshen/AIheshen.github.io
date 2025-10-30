@@ -382,15 +382,15 @@
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
             
-            // 透明度参数 - 明确设置为50%
-            const PARTICLE_OPACITY = 0.1; // 粒子透明度
-            const TRAIL_OPACITY = 0.4;    // 轨迹透明度
-            const LINE_OPACITY = 0.7;     // 连线透明度
+            // 透明度参数
+            const PARTICLE_OPACITY = 0.2; // 粒子透明度50%
+            const TRAIL_OPACITY = 0.7;    // 轨迹透明度
+            const LINE_OPACITY = 0.5;     // 连线透明度
             
-            // 粒子类型定义
+            // 粒子类型定义 - 使用浅色
             const PARTICLE_TYPES = {
-                NORMAL: { colors: ['#00ffff', '#00aaff'], size: [1, 4], speed: 0.12 },
-                FAST: { colors: ['#ff00ff', '#ff4000'], size: [1, 3], speed: 0.2 }
+                NORMAL: { colors: ['#e6f7ff', '#ccf2ff', '#b3ecff'], size: [1, 4], speed: 0.12 },
+                FAST: { colors: ['#ffe6f2', '#ffccf2', '#ffb3ec'], size: [1, 3], speed: 0.2 }
             };
 
             class Particle {
@@ -450,26 +450,30 @@
                         fy = (dy/dist) * force;
                     }
 
-                    // 弹性边界 - 添加弹性斥力
+                    // 弹性边界 - 增强边界斥力防止堆积
                     let borderForceX = 0, borderForceY = 0;
-                    const borderRange = 30; // 弹性边界范围
-                    const borderStrength = 0.8; // 弹性强度
+                    const borderRange = 80; // 增加边界范围
+                    const borderStrength = 2.0; // 增强边界强度
                     
                     // 左边界弹性
                     if(this.x < borderRange) {
-                        borderForceX += (borderRange - this.x) / borderRange * borderStrength;
+                        const distanceFactor = (borderRange - this.x) / borderRange;
+                        borderForceX += distanceFactor * borderStrength;
                     }
                     // 右边界弹性
                     if(this.x > canvas.width - borderRange) {
-                        borderForceX -= (this.x - (canvas.width - borderRange)) / borderRange * borderStrength;
+                        const distanceFactor = (this.x - (canvas.width - borderRange)) / borderRange;
+                        borderForceX -= distanceFactor * borderStrength;
                     }
                     // 上边界弹性
                     if(this.y < borderRange) {
-                        borderForceY += (borderRange - this.y) / borderRange * borderStrength;
+                        const distanceFactor = (borderRange - this.y) / borderRange;
+                        borderForceY += distanceFactor * borderStrength;
                     }
                     // 下边界弹性
                     if(this.y > canvas.height - borderRange) {
-                        borderForceY -= (this.y - (canvas.height - borderRange)) / borderRange * borderStrength;
+                        const distanceFactor = (this.y - (canvas.height - borderRange)) / borderRange;
+                        borderForceY -= distanceFactor * borderStrength;
                     }
 
                     // 更新总速度 = 基础漂移 + 轨道运动 + 鼠标作用 + 边界弹性
@@ -494,38 +498,50 @@
                         this.trail.shift();
                     }
 
-                    // 弹性边界反弹 - 增强弹性效果
-                    const bounceStrength = 0.8; // 增加反弹强度
+                    // 弹性边界反弹 - 增强反弹效果防止堆积
+                    const bounceStrength = 1.2; // 增加反弹强度
                     if(this.x < 0) { 
-                        this.x = 0; 
+                        this.x = 1; 
                         this.vx_base = Math.abs(this.vx_base) * bounceStrength;
                         this.borderStuckTime++;
                     } else if(this.x > canvas.width) { 
-                        this.x = canvas.width; 
+                        this.x = canvas.width - 1; 
                         this.vx_base = -Math.abs(this.vx_base) * bounceStrength;
                         this.borderStuckTime++;
                     } else if(this.y < 0) { 
-                        this.y = 0; 
+                        this.y = 1; 
                         this.vy_base = Math.abs(this.vy_base) * bounceStrength;
                         this.borderStuckTime++;
                     } else if(this.y > canvas.height) { 
-                        this.y = canvas.height; 
+                        this.y = canvas.height - 1; 
                         this.vy_base = -Math.abs(this.vy_base) * bounceStrength;
                         this.borderStuckTime++;
                     } else {
                         this.borderStuckTime = 0;
                     }
                     
-                    // 如果粒子在边界停留时间过长，给它一个随机方向的速度
-                    if(this.borderStuckTime > 30) {
-                        this.vx_base = (Math.random()-0.5) * this.config.speed * 2;
-                        this.vy_base = (Math.random()-0.5) * this.config.speed * 2;
+                    // 如果粒子在边界停留时间过长，给它一个远离边界的力
+                    if(this.borderStuckTime > 20) {
+                        // 计算指向中心的向量
+                        const centerX = canvas.width / 2;
+                        const centerY = canvas.height / 2;
+                        const toCenterX = centerX - this.x;
+                        const toCenterY = centerY - this.y;
+                        const toCenterDist = Math.sqrt(toCenterX*toCenterX + toCenterY*toCenterY);
+                        
+                        if(toCenterDist > 0) {
+                            // 添加指向中心的速度
+                            const centerForce = 0.5;
+                            this.vx_base += (toCenterX / toCenterDist) * centerForce;
+                            this.vy_base += (toCenterY / toCenterDist) * centerForce;
+                        }
+                        
                         this.borderStuckTime = 0;
                     }
                 }
                 
                 draw() {
-                    // 绘制轨迹 - 使用明确的透明度参数
+                    // 绘制轨迹
                     for(let i = 0; i < this.trail.length; i++) {
                         const point = this.trail[i];
                         const alpha = i / this.trail.length * TRAIL_OPACITY;
@@ -535,13 +551,13 @@
                         ctx.fill();
                     }
                     
-                    // 绘制粒子 - 使用明确的透明度参数
+                    // 绘制粒子
                     ctx.fillStyle = this.hexToRgba(this.color, PARTICLE_OPACITY);
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                     ctx.fill();
                     
-                    // 发光效果 - 使用明确的透明度参数
+                    // 发光效果
                     ctx.shadowColor = this.hexToRgba(this.color, PARTICLE_OPACITY);
                     ctx.shadowBlur = 8;
                     ctx.fill();
@@ -573,9 +589,11 @@
                 
                 for(let i = 0; i < particleCount; i++) {
                     const type = types[Math.floor(Math.random() * types.length)];
+                    // 避免在边界初始化粒子
+                    const margin = 50;
                     particles.push(new Particle(
-                        Math.random() * canvas.width, 
-                        Math.random() * canvas.height,
+                        Math.random() * (canvas.width - 2 * margin) + margin, 
+                        Math.random() * (canvas.height - 2 * margin) + margin,
                         type
                     ));
                 }
@@ -605,15 +623,15 @@
                     p.draw(); 
                 }
 
-                // 粒子连线 - 使用明确的透明度参数
+                // 粒子连线 - 连接线长度翻倍 (从80改为160)
                 for(let i = 0; i < particles.length; i++) {
                     for(let j = i + 1; j < particles.length; j++) {
                         let dx = particles[i].x - particles[j].x;
                         let dy = particles[i].y - particles[j].y;
                         let dist = Math.sqrt(dx*dx + dy*dy);
                         
-                        if(dist < 80) {
-                            const alpha = (1 - dist/80) * LINE_OPACITY;
+                        if(dist < 160) { // 连线距离翻倍
+                            const alpha = (1 - dist/160) * LINE_OPACITY;
                             let lineColor;
                             
                             if(particles[i].type === particles[j].type) {
@@ -622,7 +640,7 @@
                                 lineColor = '#ffffff';
                             }
                             
-                            // 连线透明度使用明确的参数
+                            // 连线透明度
                             ctx.strokeStyle = hexToRgba(lineColor, alpha);
                             ctx.lineWidth = 0.3;
                             ctx.beginPath();
@@ -655,6 +673,3 @@
     </script>
 </body>
 </html>
-
-
-
