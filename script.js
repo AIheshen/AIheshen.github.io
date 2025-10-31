@@ -1,17 +1,63 @@
+// 设备检测和参数配置
+const getDeviceConfig = () => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const isPortrait = height > width;
+    
+    // 移动端检测 (竖屏且宽度小于768px)
+    if (isPortrait && width < 768) {
+        return {
+            particleCount: 80,
+            connectionDistance: 90,
+            repulsionRadius: 60,
+            repulsionStrength: 40,
+            maxSpeed: 0.8
+        };
+    }
+    // 平板检测 (宽度在768px到1024px之间)
+    else if (width >= 768 && width <= 1024) {
+        return {
+            particleCount: 150,
+            connectionDistance: 110,
+            repulsionRadius: 80,
+            repulsionStrength: 50,
+            maxSpeed: 1
+        };
+    }
+    // 电脑端 (宽度大于1024px)
+    else {
+        return {
+            particleCount: 400,
+            connectionDistance: 160,
+            repulsionRadius: 100,
+            repulsionStrength: 60,
+            maxSpeed: 1.2
+        };
+    }
+};
+
 // 粒子背景系统
 let particles = [];
 let canvas;
+let deviceConfig;
 
 // p5.js 设置函数
 function setup() {
+    // 获取设备配置
+    deviceConfig = getDeviceConfig();
+    
     // 创建画布并添加到背景容器
     canvas = createCanvas(windowWidth, windowHeight);
     canvas.parent('canvas-bg');
     
     // 创建粒子
-    for (let i = 0; i < 400; i++) {
+    particles = [];
+    for (let i = 0; i < deviceConfig.particleCount; i++) {
         particles.push(new Particle());
     }
+    
+    console.log(`设备类型: ${window.innerWidth < 768 ? '移动端' : (window.innerWidth <= 1024 ? '平板' : '电脑端')}`);
+    console.log(`粒子数量: ${deviceConfig.particleCount}, 连接距离: ${deviceConfig.connectionDistance}`);
 }
 
 // p5.js 绘制函数
@@ -34,8 +80,8 @@ function draw() {
     for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
             let dist = p5.Vector.dist(particles[i].pos, particles[j].pos);
-            if (dist < 160) {
-                let alpha = map(dist, 0, 120, 150, 0);
+            if (dist < deviceConfig.connectionDistance) {
+                let alpha = map(dist, 0, deviceConfig.connectionDistance, 150, 0);
                 stroke(isLightTheme ? 0 : 255, alpha);
                 strokeWeight(0.5);
                 line(particles[i].pos.x, particles[i].pos.y, particles[j].pos.x, particles[j].pos.y);
@@ -44,9 +90,24 @@ function draw() {
     }
 }
 
-// 窗口大小改变时调整画布
+// 窗口大小改变时调整画布和重新初始化粒子
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
+    
+    // 重新获取设备配置并重新初始化粒子
+    const newConfig = getDeviceConfig();
+    
+    // 只有当配置发生变化时才重新创建粒子
+    if (newConfig.particleCount !== deviceConfig.particleCount) {
+        deviceConfig = newConfig;
+        particles = [];
+        for (let i = 0; i < deviceConfig.particleCount; i++) {
+            particles.push(new Particle());
+        }
+        console.log(`窗口大小改变 - 粒子数量: ${deviceConfig.particleCount}, 连接距离: ${deviceConfig.connectionDistance}`);
+    } else {
+        deviceConfig = newConfig;
+    }
 }
 
 // 粒子类
@@ -55,7 +116,7 @@ class Particle {
         this.pos = createVector(random(width), random(height));
         this.vel = p5.Vector.random2D().mult(random(0.2, 0.8));
         this.acc = createVector(0, 0);
-        this.maxSpeed = 1;
+        this.maxSpeed = deviceConfig.maxSpeed;
         this.color = color(random(['#00ffff', '#ff00ff', '#ffff00', '#ffffff']));
         this.size = random(1.5, 3);
         this.pulseOffset = random(0, TWO_PI);
@@ -65,8 +126,8 @@ class Particle {
     repel(target) {
         let force = p5.Vector.sub(this.pos, target);
         let distance = force.mag();
-        if (distance < 80) {
-            let strength = 50 * (80 - distance) / 80;
+        if (distance < deviceConfig.repulsionRadius) {
+            let strength = deviceConfig.repulsionStrength * (deviceConfig.repulsionRadius - distance) / deviceConfig.repulsionRadius;
             force.setMag(strength);
             this.applyForce(force);
         }
@@ -213,4 +274,3 @@ document.addEventListener('DOMContentLoaded', () => {
         icon.className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
     }
 });
-
