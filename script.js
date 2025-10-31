@@ -9,7 +9,7 @@ function setup() {
     canvas.parent('canvas-bg');
     
     // 创建粒子
-    for (let i = 0; i < 300; i++) {
+    for (let i = 0; i < 400; i++) {
         particles.push(new Particle());
     }
 }
@@ -34,7 +34,7 @@ function draw() {
     for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
             let dist = p5.Vector.dist(particles[i].pos, particles[j].pos);
-            if (dist < 150) {
+            if (dist < 160) {
                 let alpha = map(dist, 0, 120, 150, 0);
                 stroke(isLightTheme ? 0 : 255, alpha);
                 strokeWeight(0.5);
@@ -213,3 +213,4 @@ document.addEventListener('DOMContentLoaded', () => {
         icon.className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
     }
 });
+
