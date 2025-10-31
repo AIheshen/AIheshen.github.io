@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelectorAll('.nav-link');
     const sections = document.querySelectorAll('.section');
@@ -110,28 +109,4 @@ document.addEventListener('DOMContentLoaded', () => {
         const icon = themeToggle.querySelector('i');
         icon.className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
     }
-    
-    // 自适应调整函数
-    function handleResize() {
-        // 根据屏幕尺寸调整粒子数量
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
-        const screenArea = screenWidth * screenHeight;
-        
-        // 根据屏幕面积调整粒子数量
-        const baseParticleCount = 150;
-        const baseScreenArea = 1920 * 1080;
-        const adjustedParticleCount = Math.floor(baseParticleCount * (screenArea / baseScreenArea));
-        
-        // 如果粒子数量变化超过20%，重新初始化粒子系统
-        if (Math.abs(adjustedParticleCount - window.PARTICLE_COUNT) > window.PARTICLE_COUNT * 0.2) {
-            console.log(`建议粒子数量调整为: ${adjustedParticleCount}`);
-        }
-    }
-    
-    // 监听窗口大小变化
-    window.addEventListener('resize', handleResize);
-    
-    // 初始调整
-    handleResize();
 });
