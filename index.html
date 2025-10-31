@@ -13,6 +13,11 @@
             --accent-color: #00ffff;
             --card-bg: rgba(255, 255, 255, 0.05);
             --border-color: rgba(255, 255, 255, 0.1);
+            --section-padding: clamp(2rem, 5vw, 4rem);
+            --container-width: min(1200px, 85vw); /* 减小容器宽度 */
+            --font-size-base: clamp(1rem, 2vw, 1.2rem);
+            --font-size-lg: clamp(1.5rem, 3vw, 2.5rem);
+            --font-size-xl: clamp(2rem, 5vw, 3.5rem);
         }
 
         [data-theme="light"] {
@@ -23,6 +28,10 @@
             --border-color: rgba(0, 0, 0, 0.1);
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
         body { 
             margin: 0; 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
@@ -30,6 +39,7 @@
             color: var(--text-color); 
             overflow-x: hidden; 
             line-height: 1.6;
+            font-size: var(--font-size-base);
             transition: background-color 0.5s ease, color 0.5s ease;
         }
         #canvas-bg { 
@@ -50,7 +60,7 @@
             background: rgba(10, 10, 26, 0.7); 
             backdrop-filter: blur(10px); 
             z-index: 1000; 
-            padding: 10px 0; 
+            padding: 0.5rem 0; 
             border-bottom: 1px solid rgba(0, 255, 255, 0.2); 
             transition: all 0.3s ease;
         }
@@ -58,26 +68,30 @@
             background: rgba(245, 247, 250, 0.9);
             border-bottom: 1px solid rgba(0, 122, 204, 0.2);
         }
-        nav .container { 
+        .nav-container { 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 1rem;
         }
         nav ul { 
             list-style: none; 
             margin: 0; 
             padding: 0; 
             display: flex; 
-            gap: 20px; 
+            gap: clamp(0.5rem, 2vw, 1.5rem); 
         }
         nav ul li a { 
             color: var(--text-color); 
             text-decoration: none; 
-            font-size: 1rem; 
-            padding: 10px 15px; 
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem); 
+            padding: 0.5rem clamp(0.5rem, 1.5vw, 1rem); 
             border-radius: 5px; 
             transition: background 0.3s ease, color 0.3s ease; 
             cursor: pointer; 
+            white-space: nowrap;
         }
         nav ul li a:hover, 
         nav ul li a.active { 
@@ -94,14 +108,15 @@
             background: transparent;
             border: 1px solid var(--accent-color);
             color: var(--text-color);
-            width: 40px;
-            height: 40px;
+            width: clamp(2.5rem, 6vw, 3rem);
+            height: clamp(2.5rem, 6vw, 3rem);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
         }
         .theme-toggle:hover {
             background: rgba(0, 255, 255, 0.1);
@@ -113,15 +128,15 @@
             display: none;
             flex-direction: column;
             justify-content: space-between;
-            width: 30px;
-            height: 21px;
+            width: clamp(1.5rem, 5vw, 2rem);
+            height: clamp(1rem, 3.5vw, 1.3rem);
             background: transparent;
             border: none;
             cursor: pointer;
         }
         .mobile-menu-btn span {
             display: block;
-            height: 3px;
+            height: 2px;
             width: 100%;
             background-color: var(--text-color);
             border-radius: 3px;
@@ -129,25 +144,25 @@
         }
         
         .container { 
-            max-width: 1200px; 
+            max-width: var(--container-width);
             margin: 0 auto; 
-            padding: 0 20px; 
+            padding: 0 clamp(1rem, 3vw, 2rem); 
         }
         
         /* 滚动指示器 */
         .scroll-indicator {
             position: fixed;
-            right: 30px;
+            right: clamp(0.5rem, 2vw, 2rem);
             top: 50%;
             transform: translateY(-50%);
             z-index: 1000;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: clamp(0.5rem, 2vw, 1rem);
         }
         .scroll-dot {
-            width: 12px;
-            height: 12px;
+            width: clamp(0.5rem, 2vw, 0.8rem);
+            height: clamp(0.5rem, 2vw, 0.8rem);
             border: 2px solid var(--accent-color);
             border-radius: 50%;
             cursor: pointer;
@@ -180,7 +195,7 @@
         
         /* 主要内容区域 */
         .main-content { 
-            padding-top: 80px; 
+            padding-top: clamp(3rem, 8vw, 5rem); 
         }
         .section { 
             opacity: 0;
@@ -188,13 +203,13 @@
             transition: opacity 0.8s ease, transform 0.8s ease;
             position: absolute;
             width: 100%;
-            min-height: calc(100vh - 80px);
+            min-height: calc(100vh - clamp(3rem, 8vw, 5rem));
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 40px 0;
+            padding: var(--section-padding) 0;
             pointer-events: none;
         }
         .section.active { 
@@ -209,41 +224,46 @@
             flex-direction: row;
             justify-content: space-between;
             text-align: left;
-            padding: 0 5%;
+            padding: 0 clamp(1rem, 3vw, 5%);
         }
         .hero-content {
             display: flex;
             width: 100%;
             align-items: center;
             justify-content: space-between;
-            gap: 40px;
+            gap: clamp(1rem, 4vw, 3rem);
+            flex-wrap: wrap;
         }
         .hero-left {
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            max-width: 500px;
+            min-width: min(100%, 300px);
         }
         .hero-right {
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            max-width: 500px;
+            min-width: min(100%, 300px);
+            /* 修复右侧内容遮挡问题 - 使用更精确的调整 */
+            padding-right: 0;
+            margin-left: -20ch; /* 增加移动距离 */
+            max-width: calc(100% - 12ch); /* 确保内容不会超出容器 */
         }
         .profile-img { 
-            width: 150px; 
-            height: 150px; 
+            width: clamp(6rem, 20vw, 10rem); 
+            height: clamp(6rem, 20vw, 10rem); 
             border-radius: 50%; 
-            border: 5px solid rgba(255, 255, 255, 0.8); 
+            border: 3px solid rgba(255, 255, 255, 0.8); 
             object-fit: cover; 
             box-shadow: 0 0 30px rgba(0, 255, 255, 0.5); 
             transition: transform 0.3s ease, box-shadow 0.3s ease; 
-            margin-bottom: 20px;
+            margin-bottom: 1rem;
         }
         [data-theme="light"] .profile-img {
-            border: 5px solid rgba(0, 0, 0, 0.1);
+            border: 3px solid rgba(0, 0, 0, 0.1);
             box-shadow: 0 0 30px rgba(0, 122, 204, 0.3);
         }
         .profile-img:hover { 
@@ -254,56 +274,58 @@
             box-shadow: 0 0 50px rgba(0, 122, 204, 0.5);
         }
         .hero-left h1 { 
-            font-size: 3rem; 
-            margin: 0 0 10px; 
+            font-size: var(--font-size-xl); 
+            margin: 0 0 0.5rem; 
             color: var(--text-color); 
-            letter-spacing: 2px; 
+            letter-spacing: 1px; 
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.5); 
         }
         [data-theme="light"] .hero-left h1 {
             text-shadow: 0 0 15px rgba(0, 122, 204, 0.3);
         }
         .subtitle { 
-            font-size: 1.3rem; 
+            font-size: clamp(1rem, 3vw, 1.5rem); 
             color: var(--accent-color); 
-            margin: 0 0 30px; 
+            margin: 0 0 1.5rem; 
             font-weight: 300; 
         }
         
         /* 右侧内容样式 */
         .hero-right h2 {
-            font-size: 2rem;
+            font-size: var(--font-size-lg);
             color: var(--text-color);
-            margin-bottom: 20px;
+            margin-bottom: 1rem;
             position: relative;
         }
         .hero-right h2::after {
             content: '';
-            width: 60px;
+            width: clamp(2rem, 6vw, 4rem);
             height: 3px;
             background: var(--accent-color);
             position: absolute;
-            bottom: -8px;
+            bottom: -0.5rem;
             left: 0;
         }
         .hero-description {
-            font-size: 1.1rem;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
             line-height: 1.7;
-            margin-bottom: 30px;
+            margin-bottom: 1.5rem;
             text-align: left;
+            word-break: break-word; /* 确保长文本自动换行 */
+            overflow-wrap: break-word; /* 确保长单词也能正确换行 */
         }
         .skills-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
         }
         .skill-tag {
             background: rgba(0, 255, 255, 0.1);
             color: var(--accent-color);
-            padding: 8px 15px;
+            padding: 0.4rem 0.8rem;
             border-radius: 20px;
-            font-size: 0.9rem;
+            font-size: clamp(0.8rem, 1.5vw, 0.9rem);
             border: 1px solid rgba(0, 255, 255, 0.3);
             transition: all 0.3s ease;
         }
@@ -322,9 +344,9 @@
             background: rgba(0, 255, 255, 0.2);
             color: var(--text-color);
             border: 1px solid rgba(0, 255, 255, 0.5);
-            padding: 12px 25px;
+            padding: 0.8rem 1.5rem;
             border-radius: 30px;
-            font-size: 1rem;
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
@@ -346,18 +368,18 @@
         
         /* 关于我部分 */
         #about h2, #projects h2, #contact h2 { 
-            font-size: 3rem; 
+            font-size: var(--font-size-xl); 
             color: var(--text-color); 
-            margin-bottom: 40px; 
+            margin-bottom: 2rem; 
             position: relative; 
         }
         #about h2::after, #projects h2::after, #contact h2::after { 
             content: ''; 
-            width: 80px; 
+            width: clamp(3rem, 8vw, 5rem); 
             height: 4px; 
             background: var(--accent-color); 
             position: absolute; 
-            bottom: -10px; 
+            bottom: -0.5rem; 
             left: 50%; 
             transform: translateX(-50%); 
         }
@@ -365,27 +387,30 @@
         .about-content { 
             display: flex; 
             align-items: center; 
-            gap: 60px; 
+            gap: clamp(1rem, 4vw, 4rem); 
             text-align: left;
-            max-width: 1000px;
+            max-width: 100%;
             margin: 0 auto;
+            flex-wrap: wrap;
         }
         .about-text { 
             flex: 1.5; 
-            font-size: 1.1rem; 
+            font-size: clamp(0.9rem, 2vw, 1.1rem); 
             line-height: 1.8; 
+            min-width: min(100%, 300px);
         }
         .about-highlights { 
             flex: 1; 
             background: var(--card-bg); 
             border-radius: 15px; 
-            padding: 25px; 
+            padding: clamp(1rem, 3vw, 1.5rem); 
             border: 1px solid var(--border-color); 
             backdrop-filter: blur(10px);
+            min-width: min(100%, 300px);
         }
         .highlight-item { 
-            margin-bottom: 20px; 
-            padding-bottom: 20px; 
+            margin-bottom: 1rem; 
+            padding-bottom: 1rem; 
             border-bottom: 1px solid var(--border-color); 
         }
         .highlight-item:last-child { 
@@ -396,22 +421,22 @@
         .highlight-title { 
             color: var(--accent-color); 
             font-weight: bold; 
-            margin-bottom: 5px; 
-            font-size: 1.1rem; 
+            margin-bottom: 0.3rem; 
+            font-size: clamp(0.9rem, 2vw, 1.1rem); 
         }
         
         /* 项目部分 */
         .project-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-            gap: 30px; 
+            grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); 
+            gap: clamp(1rem, 3vw, 2rem); 
             width: 100%; 
-            max-width: 1000px;
+            max-width: 100%;
         }
         .project-card { 
             background: var(--card-bg); 
             border-radius: 15px; 
-            padding: 25px; 
+            padding: clamp(1rem, 3vw, 1.5rem); 
             border: 1px solid var(--border-color); 
             transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease; 
             backdrop-filter: blur(10px); 
@@ -431,17 +456,20 @@
         .project-card h3 { 
             color: var(--accent-color); 
             margin-top: 0;
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
         }
         .project-card p { 
             flex-grow: 1;
+            font-size: clamp(0.9rem, 1.8vw, 1rem);
         }
         .project-card a { 
             color: var(--accent-color); 
             text-decoration: none; 
             font-weight: bold; 
             display: inline-block;
-            margin-top: 15px;
+            margin-top: 1rem;
             transition: all 0.3s ease;
+            font-size: clamp(0.9rem, 1.8vw, 1rem);
         }
         .project-card a:hover {
             text-shadow: 0 0 10px var(--accent-color);
@@ -449,15 +477,15 @@
         .tech-stack { 
             display: flex; 
             flex-wrap: wrap; 
-            gap: 8px; 
-            margin: 15px 0; 
+            gap: 0.5rem; 
+            margin: 1rem 0; 
         }
         .tech-tag { 
             background: rgba(0, 255, 255, 0.1); 
             color: var(--accent-color); 
-            padding: 5px 10px; 
+            padding: 0.3rem 0.6rem; 
             border-radius: 20px; 
-            font-size: 0.8rem; 
+            font-size: clamp(0.7rem, 1.5vw, 0.8rem); 
         }
         [data-theme="light"] .tech-tag {
             background: rgba(0, 122, 204, 0.1);
@@ -468,15 +496,15 @@
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            gap: 40px; 
+            gap: clamp(1rem, 3vw, 2.5rem); 
             width: 100%; 
-            max-width: 800px; 
+            max-width: 100%; 
         }
         .contact-info { 
             display: flex; 
             flex-wrap: wrap; 
             justify-content: center; 
-            gap: 40px; 
+            gap: clamp(1rem, 3vw, 2.5rem); 
             width: 100%; 
         }
         .contact-item { 
@@ -485,27 +513,27 @@
             align-items: center; 
             background: var(--card-bg); 
             border-radius: 15px; 
-            padding: 25px; 
+            padding: clamp(1rem, 3vw, 1.5rem); 
             border: 1px solid var(--border-color); 
             backdrop-filter: blur(10px); 
-            width: 200px; 
+            width: min(100%, 200px);
             transition: transform 0.3s ease;
         }
         .contact-item:hover {
             transform: translateY(-5px);
         }
         .contact-icon { 
-            font-size: 2.5rem; 
+            font-size: clamp(1.5rem, 4vw, 2.5rem); 
             color: var(--accent-color); 
-            margin-bottom: 15px; 
+            margin-bottom: 0.8rem; 
         }
         .contact-label { 
-            font-size: 1rem; 
-            margin-bottom: 10px; 
+            font-size: clamp(0.9rem, 1.8vw, 1rem); 
+            margin-bottom: 0.5rem; 
             color: var(--text-color); 
         }
         .contact-value { 
-            font-size: 1.1rem; 
+            font-size: clamp(0.9rem, 2vw, 1.1rem); 
             color: var(--text-color); 
             font-weight: bold; 
         }
@@ -513,11 +541,11 @@
             list-style: none; 
             padding: 0; 
             display: flex; 
-            gap: 25px; 
-            margin-top: 20px; 
+            gap: clamp(1rem, 3vw, 1.5rem); 
+            margin-top: 1rem; 
         }
         .social-links li a { 
-            font-size: 2.5rem; 
+            font-size: clamp(1.5rem, 4vw, 2.5rem); 
             color: var(--text-color); 
             transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.3s ease; 
         }
@@ -530,25 +558,27 @@
         /* 技能进度条 */
         .skills-progress {
             width: 100%;
-            max-width: 600px;
-            margin-top: 40px;
+            max-width: min(600px, 100%);
+            margin-top: 2rem;
         }
         .skill-item {
-            margin-bottom: 20px;
+            margin-bottom: 1rem;
         }
         .skill-info {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem;
         }
         .skill-name {
             font-weight: bold;
+            font-size: clamp(0.9rem, 2vw, 1rem);
         }
         .skill-percent {
             color: var(--accent-color);
+            font-size: clamp(0.9rem, 2vw, 1rem);
         }
         .skill-bar {
-            height: 10px;
+            height: 8px;
             background: var(--card-bg);
             border-radius: 5px;
             overflow: hidden;
@@ -574,6 +604,11 @@
                 align-items: center;
                 text-align: center;
             }
+            .hero-right {
+                /* 在移动端不需要向左移动 */
+                margin-left: 0;
+                max-width: 100%; /* 重置最大宽度 */
+            }
             .hero-right h2::after {
                 left: 50%;
                 transform: translateX(-50%);
@@ -583,19 +618,13 @@
             }
             .about-content { 
                 flex-direction: column; 
-                gap: 40px; 
-            }
-            .hero-left h1 { 
-                font-size: 2.5rem; 
-            }
-            #about h2, #projects h2, #contact h2 { 
-                font-size: 2.2rem; 
+                gap: 2rem; 
             }
             .project-grid { 
                 grid-template-columns: 1fr; 
             }
             .scroll-indicator {
-                right: 15px;
+                right: 0.5rem;
             }
             .mobile-menu-btn {
                 display: flex;
@@ -608,7 +637,7 @@
                 width: 100%;
                 background: rgba(10, 10, 26, 0.95);
                 flex-direction: column;
-                padding: 20px 0;
+                padding: 1rem 0;
                 border-top: 1px solid rgba(0, 255, 255, 0.2);
             }
             [data-theme="light"] nav ul {
@@ -619,11 +648,37 @@
                 display: flex;
             }
             .contact-info {
-                gap: 20px;
+                gap: 1rem;
             }
             .contact-item {
                 width: 100%;
                 max-width: 250px;
+            }
+        }
+
+        /* 超小屏幕优化 */
+        @media (max-width: 480px) {
+            .hero-content {
+                gap: 1.5rem;
+            }
+            .skills-container {
+                justify-content: center;
+            }
+            .about-content {
+                gap: 1.5rem;
+            }
+            .project-grid {
+                gap: 1rem;
+            }
+            .contact-info {
+                gap: 0.8rem;
+            }
+        }
+
+        /* 超大屏幕优化 */
+        @media (min-width: 1600px) {
+            :root {
+                --container-width: 1400px;
             }
         }
     </style>
@@ -634,7 +689,7 @@
     <div id="canvas-bg"></div>
 
     <nav>
-        <div class="container">
+        <div class="nav-container">
             <ul>
                 <li><a href="#hero" class="nav-link active">主页</a></li>
                 <li><a href="#about" class="nav-link">关于我</a></li>
@@ -663,7 +718,7 @@
         <section id="hero" class="section active">
             <div class="hero-content">
                 <div class="hero-left">
-                    <img src="IMG_20250810_032653.png" alt="头像" class="profile-img">
+                    <img src="IMG_20250810_032653.png" alt="艾合的头像" class="profile-img">
                     <h1>你好，我是艾合</h1>
                     <p class="subtitle">一位充满热情的编程爱好者</p>
                 </div>
@@ -1050,6 +1105,32 @@
                 const icon = themeToggle.querySelector('i');
                 icon.className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
             }
+            
+            // 自适应调整函数
+            function handleResize() {
+                // 根据屏幕尺寸调整粒子数量
+                const screenWidth = window.innerWidth;
+                const screenHeight = window.innerHeight;
+                const screenArea = screenWidth * screenHeight;
+                
+                // 根据屏幕面积调整粒子数量
+                const baseParticleCount = 150;
+                const baseScreenArea = 1920 * 1080;
+                const adjustedParticleCount = Math.floor(baseParticleCount * (screenArea / baseScreenArea));
+                
+                // 如果粒子数量变化超过20%，重新初始化粒子系统
+                if (Math.abs(adjustedParticleCount - PARTICLE_COUNT) > PARTICLE_COUNT * 0.2) {
+                    // 在实际项目中，这里应该重新初始化粒子系统
+                    // 由于p5.js的限制，这里只是示例
+                    console.log(`建议粒子数量调整为: ${adjustedParticleCount}`);
+                }
+            }
+            
+            // 监听窗口大小变化
+            window.addEventListener('resize', handleResize);
+            
+            // 初始调整
+            handleResize();
         });
     </script>
 </body>
