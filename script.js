@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     AOS.init({ duration: 1000, once: true, offset: 50 });
 
     new Typed('#typing-effect', {
-        strings: ['你好，我是艾合', '一位编程爱好者', '探索技术的无限可能'],
+        strings: [ '我是艾合', '一位编程爱好者','期待与您合作','致力于将一切自动化', '专注于AI协作编程', '探索技术的无限可能'],
         typeSpeed: 70,
         backSpeed: 40,
         loop: true
