@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     AOS.init({ duration: 1000, once: true, offset: 50 });
 
     new Typed('#typing-effect', {
-        strings: ['你好，我是艾合', '一位编程爱好者', '欢迎来到我的空间','期望与您共同合作', '致力于将一切自动化',  '探索技术的无限可能'],
+        strings: ['你好，我是艾合', '一位编程爱好者', '探索技术的无限可能'],
         typeSpeed: 70,
         backSpeed: 40,
         loop: true
@@ -43,16 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.innerWidth > 768 && !('ontouchstart' in window)) {
             const tiltElements = document.querySelectorAll('.tilt-panel');
             tiltElements.forEach(el => {
-                // Determine which inner element to transform based on the parent tilt-panel
-                let contentToTilt;
-                if (el.classList.contains('project-card')) {
-                    contentToTilt = el.querySelector('.card-content');
-                } else if (el.classList.contains('about-panel')) {
-                    contentToTilt = el.querySelector('.about-content');
-                } else { // For hero-right tilt-panel
-                    contentToTilt = el.querySelector('.hero-text-wrapper');
-                }
-
+                const content = el.querySelector('.card-content, .about-content, .hero-text-wrapper');
                 el.addEventListener('mousemove', e => {
                     const rect = el.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -63,12 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     const rotateY = ((x - centerX) / centerX) * 8;
                     
                     requestAnimationFrame(() => {
-                        if(contentToTilt) contentToTilt.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                        if(content) content.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
                     });
                 });
                 el.addEventListener('mouseleave', () => {
                     requestAnimationFrame(() => {
-                        if(contentToTilt) contentToTilt.style.transform = 'rotateX(0deg) rotateY(0deg)';
+                        if(content) content.style.transform = 'rotateX(0deg) rotateY(0deg)';
                     });
                 });
             });
@@ -231,7 +222,7 @@ class Particle {
 class ShootingStar {
     constructor() {
         this.reset();
-        this.len = random(40, 60); // Denser trail
+        this.len = random(40, 60); // Denser tail
         this.history = [];
     }
     reset() {
