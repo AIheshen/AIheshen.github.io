@@ -17,9 +17,6 @@
     --shadow-color: rgba(0, 246, 255, 0.15);
     --nav-height: 70px;
     --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --font-size-base: clamp(1rem, 0.9vw + 0.5rem, 1.25rem);
-    --font-size-lg: clamp(1.2rem, 1.5vw + 0.5rem, 2rem);
-    --font-size-xl: clamp(2.8rem, 5vw + 1rem, 4.5rem);
 }
 
 [data-theme="light"] {
@@ -45,16 +42,15 @@ body {
     color: var(--text-color); 
     overflow-x: hidden; 
     line-height: 1.7;
-    font-size: var(--font-size-base);
     transition: background-color 0.4s ease, color 0.4s ease;
 }
 body.menu-open { overflow: hidden; }
 
 h1, h2, h3 { line-height: 1.2; font-weight: 700; color: var(--heading-color); }
-h1 { font-size: var(--font-size-xl); }
+h1 { font-size: clamp(2.8rem, 6vw, 4.5rem); }
 h2 { font-size: clamp(2rem, 5vw, 3rem); text-align: center; margin-bottom: 4rem; position: relative; }
 h2::after { content: ''; width: 60px; height: 3px; background: var(--accent-1); position: absolute; bottom: -1rem; left: 50%; transform: translateX(-50%); box-shadow: 0 0 10px var(--accent-1); }
-h3 { font-size: var(--font-size-lg); color: var(--accent-1); margin-top: 0; }
+h3 { font-size: clamp(1.2rem, 3vw, 1.6rem); color: var(--accent-1); margin-top: 0; }
 a { color: var(--accent-1); text-decoration: none; transition: color 0.3s ease; }
 a:hover { color: var(--heading-color); }
 
@@ -111,8 +107,8 @@ nav ul { display: flex; gap: 3rem; }
 .profile-img { width: clamp(150px, 20vw, 220px); height: clamp(150px, 20vw, 220px); border-radius: 50%; border: 4px solid var(--accent-1); object-fit: cover; box-shadow: 0 0 40px var(--shadow-color), inset 0 0 30px rgba(0, 246, 255, 0.2); transition: transform 0.3s ease, opacity 0.3s ease; }
 .glitch { position: relative; text-shadow: 0 0 5px var(--accent-1), 0 0 10px var(--accent-2); animation: glitch-anim 5s infinite alternate; }
 @keyframes glitch-anim { from { text-shadow: 0 0 5px var(--accent-1), 0 0 10px var(--accent-2); } to { text-shadow: 0 0 5px var(--accent-2), 0 0 10px var(--accent-1); } }
-.typing-container { min-height: 4rem; /* Reserve space for typing text */ color: var(--accent-1); font-size: var(--font-size-lg); margin: 0.5rem 0 1rem; }
-#typing-effect .typed-cursor { font-size: var(--font-size-lg); }
+#typing-effect .typed-cursor { color: var(--accent-1); font-weight: normal; }
+.subtitle { font-size: clamp(1rem, 2.5vw, 1.2rem); margin: 0.5rem 0 1rem; color: var(--accent-1); }
 .hero-description { max-width: 500px; margin-bottom: 2.5rem; opacity: 0.9; }
 .cta-button { border-radius: 50px; font-weight: bold; padding: 1rem 2.5rem; border: none; color: #fff; background: linear-gradient(45deg, var(--accent-2), var(--accent-1)); transition: all 0.3s ease; }
 .cta-button:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--shadow-color); }
@@ -170,274 +166,4 @@ nav ul { display: flex; gap: 3rem; }
     .mobile-menu-btn.open span:nth-child(3) { transform: translateY(-10px) rotate(-45deg); }
     nav ul { position: fixed; top: 0; right: 0; width: min(70vw, 300px); height: 100vh; background: var(--bg-color); flex-direction: column; justify-content: center; align-items: center; transform: translateX(100%); transition: transform 0.4s ease; box-shadow: -10px 0 30px rgba(0,0,0,0.1); }
     nav ul.active { transform: translateX(0); }
-}```
-
-### **JavaScript (`script.js`) 完整代码**
-
-```javascript
-document.addEventListener('DOMContentLoaded', () => {
-
-    // --- PRELOADER ---
-    window.addEventListener('load', () => {
-        document.getElementById('preloader').classList.add('loaded');
-    });
-
-    // --- INITIALIZE LIBRARIES ---
-    AOS.init({ duration: 1000, once: true, offset: 50 });
-
-    new Typed('#typing-effect', {
-        strings: ['一位充满热情的编程爱好者', '探索技术的无限可能', '专注于AI协作编程'],
-        typeSpeed: 70,
-        backSpeed: 40,
-        loop: true
-    });
-
-
-    // --- INTERACTIVE EFFECTS ---
-    // 1. Text Decode Hover for Nav Links
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    document.querySelectorAll('a[data-value]').forEach(link => {
-        let interval = null;
-        link.onmouseover = event => {
-            let iteration = 0;
-            clearInterval(interval);
-            interval = setInterval(() => {
-                const target = event.currentTarget;
-                target.innerText = target.dataset.value.split("")
-                    .map((letter, index) => {
-                        if (index < iteration) return target.dataset.value[index];
-                        return letters[Math.floor(Math.random() * 52)];
-                    })
-                    .join("");
-                if (iteration >= target.dataset.value.length) clearInterval(interval);
-                iteration += 1 / 2;
-            }, 30);
-        };
-    });
-
-    // 2. 3D Tilt Effect
-    const initTiltEffect = () => {
-        if (window.innerWidth > 768 && !('ontouchstart' in window)) {
-            const tiltElements = document.querySelectorAll('.tilt-panel');
-            tiltElements.forEach(el => {
-                const content = el.querySelector('.card-content, .about-content, .hero-text-wrapper');
-                el.addEventListener('mousemove', e => {
-                    const rect = el.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    const rotateX = ((y - centerY) / centerY) * -8;
-                    const rotateY = ((x - centerX) / centerX) * 8;
-                    
-                    requestAnimationFrame(() => {
-                        if(content) content.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-                    });
-                });
-                el.addEventListener('mouseleave', () => {
-                    requestAnimationFrame(() => {
-                        if(content) content.style.transform = 'rotateX(0deg) rotateY(0deg)';
-                    });
-                });
-            });
-        }
-    };
-    initTiltEffect();
-
-    // 3. Scroll-Driven Avatar Animation
-    const avatar = document.getElementById('hero-avatar');
-    window.addEventListener('scroll', () => {
-        const scrollY = window.scrollY;
-        if (avatar && scrollY < window.innerHeight) {
-            const scale = Math.max(0.5, 1 - scrollY / 800);
-            const rotation = scrollY / 10;
-            const opacity = Math.max(0, 1 - scrollY / 500);
-            avatar.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
-            avatar.style.opacity = opacity;
-        }
-    });
-
-    // 4. Project Filtering System
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    const projectItems = document.querySelectorAll('.project-card, .placeholder-card');
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const filter = btn.dataset.filter;
-            projectItems.forEach(item => {
-                if (filter === 'all' || item.dataset.category === filter) {
-                    item.classList.add('visible');
-                } else {
-                    item.classList.remove('visible');
-                }
-            });
-        });
-    });
-    document.querySelector('.filter-btn[data-filter="all"]').click();
-
-    // 5. Theme Toggle
-    const themeToggle = document.getElementById('theme-toggle');
-    const applyTheme = (theme) => {
-        document.body.dataset.theme = theme;
-        themeToggle.querySelector('i').className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-        localStorage.setItem('theme', theme);
-    };
-    themeToggle.addEventListener('click', () => {
-        const newTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
-        applyTheme(newTheme);
-    });
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    applyTheme(savedTheme);
-
-
-    // --- NAVIGATION & SCROLLING ---
-    const nav = document.querySelector('nav');
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const navUl = document.querySelector('nav ul');
-    const scrollToTopBtn = document.getElementById('scroll-to-top');
-
-    window.addEventListener('scroll', () => {
-        nav.classList.toggle('scrolled', window.scrollY > 50);
-        scrollToTopBtn.classList.toggle('visible', window.scrollY > 300);
-    });
-
-    mobileMenuBtn.addEventListener('click', () => {
-        mobileMenuBtn.classList.toggle('open');
-        navUl.classList.toggle('active');
-        document.body.classList.toggle('menu-open');
-    });
-    
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', () => {
-            if (navUl.classList.contains('active')) {
-                mobileMenuBtn.classList.remove('open');
-                navUl.classList.remove('active');
-                document.body.classList.remove('menu-open');
-            }
-        });
-    });
-
-    // --- COPY TO CLIPBOARD ---
-    const copyNotification = document.getElementById('copy-notification');
-    document.querySelectorAll('[data-copy]').forEach(item => {
-        item.addEventListener('click', (e) => {
-            e.preventDefault();
-            navigator.clipboard.writeText(item.dataset.copy).then(() => {
-                copyNotification.classList.add('show');
-                setTimeout(() => { copyNotification.classList.remove('show'); }, 2000);
-            });
-        });
-    });
-});
-
-// --- P5.JS PARTICLE BACKGROUND with Lines, Repulsion, Attraction, Shooting Stars & Theming ---
-let particles = [];
-let shootingStars = [];
-const particleConfig = window.innerWidth > 768 ? 
-    { count: 100, repelRadius: 100, speed: 1.2, lineDist: 120 } : 
-    { count: 40, repelRadius: 60, speed: 0.8, lineDist: 100 };
-
-function setup() {
-    let canvas = createCanvas(window.innerWidth, window.innerHeight);
-    canvas.parent('particle-canvas');
-    for (let i = 0; i < particleConfig.count; i++) {
-        particles.push(new Particle());
-    }
-    // Create shooting stars at random intervals
-    setInterval(() => {
-        if (shootingStars.length < 3) {
-            shootingStars.push(new ShootingStar());
-        }
-    }, Math.random() * 5000 + 3000);
-}
-
-function draw() {
-    clear();
-    const isLightTheme = document.body.dataset.theme === 'light';
-    const mouseVec = createVector(mouseX, mouseY);
-
-    for (let i = 0; i < particles.length; i++) {
-        particles[i].update(mouseVec);
-        particles[i].display(isLightTheme);
-        for (let j = i + 1; j < particles.length; j++) {
-            const d = dist(particles[i].pos.x, particles[i].pos.y, particles[j].pos.x, particles[j].pos.y);
-            if (d < particleConfig.lineDist) {
-                const alpha = map(d, 0, particleConfig.lineDist, 60, 0);
-                const accent1 = isLightTheme ? color(0, 122, 204) : color(0, 246, 255);
-                accent1.setAlpha(alpha);
-                stroke(accent1);
-                strokeWeight(1);
-                line(particles[i].pos.x, particles[i].pos.y, particles[j].pos.x, particles[j].pos.y);
-            }
-        }
-    }
-
-    for (let i = shootingStars.length - 1; i >= 0; i--) {
-        shootingStars[i].update();
-        shootingStars[i].display(isLightTheme);
-        if (shootingStars[i].isOffscreen()) {
-            shootingStars.splice(i, 1);
-        }
-    }
-}
-
-function windowResized() {
-    resizeCanvas(window.innerWidth, window.innerHeight);
-}
-
-class Particle {
-    constructor() { this.pos = createVector(random(width), random(height)); this.vel = p5.Vector.random2D().mult(random(0.2, particleConfig.speed)); this.acc = createVector(0, 0); this.size = random(1, 3); this.maxSpeed = particleConfig.speed; }
-    applyForce(force) { this.acc.add(force); }
-    update(mouseVec) { if (mouseIsPressed) this.attract(mouseVec); else this.repel(mouseVec); this.vel.add(this.acc); this.vel.limit(this.maxSpeed); this.pos.add(this.vel); this.acc.mult(0); this.edges(); }
-    display(isLight) { const accent1 = isLight ? color(0, 122, 204) : color(0, 246, 255); noStroke(); fill(accent1); ellipse(this.pos.x, this.pos.y, this.size); }
-    repel(target) { const force = p5.Vector.sub(this.pos, target); const d = force.mag(); if (d < particleConfig.repelRadius) { force.setMag(map(d, 0, particleConfig.repelRadius, 1, 0) * 5); this.applyForce(force); } }
-    attract(target) { const force = p5.Vector.sub(target, this.pos); let d = force.mag(); d = constrain(d, 5, 50); force.setMag(0.8 / (d * d)); this.applyForce(force); }
-    edges() { if (this.pos.x < -10) this.pos.x = width + 10; if (this.pos.x > width + 10) this.pos.x = -10; if (this.pos.y < -10) this.pos.y = height + 10; if (this.pos.y > height + 10) this.pos.y = -10; }
-}
-
-class ShootingStar {
-    constructor() {
-        this.reset();
-        this.len = random(40, 60); // Denser tail
-        this.history = [];
-    }
-    reset() {
-        this.x = random(width * 1.5);
-        this.y = random(-height * 0.5, 0);
-        this.speed = random(15, 25);
-    }
-    isOffscreen() {
-        return this.x < -200 || this.y > height + 200;
-    }
-    update() {
-        this.x -= this.speed;
-        this.y += this.speed / 2;
-        this.history.push(createVector(this.x, this.y));
-        if (this.history.length > this.len) {
-            this.history.splice(0, 1);
-        }
-    }
-    display(isLight) {
-        // Draw the glow for the head
-        if (this.history.length > 0) {
-            const head = this.history[this.history.length - 1];
-            const glowColor = isLight ? color(0, 122, 204) : color(0, 246, 255);
-            glowColor.setAlpha(200); // Brighter glow
-            noStroke();
-            fill(glowColor);
-            ellipse(head.x, head.y, this.len * 0.75, this.len * 0.75); // Half size glow
-        }
-
-        // Draw the trail
-        for (let i = 0; i < this.history.length; i++) {
-            let pos = this.history[i];
-            let alpha = map(i, 0, this.history.length, 0, 255); // Full brightness trail
-            const starColor = isLight ? color(80, 80, 80) : color(255, 255, 255);
-            starColor.setAlpha(alpha);
-            noStroke();
-            fill(starColor);
-            ellipse(pos.x, pos.y, i * 0.75, i * 0.75); // Half size trail
-        }
-    }
 }
