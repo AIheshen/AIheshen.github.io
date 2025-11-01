@@ -1,276 +1,266 @@
-// 设备检测和参数配置
-const getDeviceConfig = () => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const isPortrait = height > width;
-    
-    // 移动端检测 (竖屏且宽度小于768px)
-    if (isPortrait && width < 768) {
-        return {
-            particleCount: 80,
-            connectionDistance: 90,
-            repulsionRadius: 60,
-            repulsionStrength: 40,
-            maxSpeed: 0.8
-        };
-    }
-    // 平板检测 (宽度在768px到1024px之间)
-    else if (width >= 768 && width <= 1024) {
-        return {
-            particleCount: 150,
-            connectionDistance: 110,
-            repulsionRadius: 80,
-            repulsionStrength: 50,
-            maxSpeed: 1
-        };
-    }
-    // 电脑端 (宽度大于1024px)
-    else {
-        return {
-            particleCount: 400,
-            connectionDistance: 160,
-            repulsionRadius: 100,
-            repulsionStrength: 60,
-            maxSpeed: 1.2
-        };
-    }
-};
+document.addEventListener('DOMContentLoaded', () => {
 
-// 粒子背景系统
+    // --- PRELOADER ---
+    window.addEventListener('load', () => {
+        document.getElementById('preloader').classList.add('loaded');
+    });
+
+    // --- INITIALIZE LIBRARIES ---
+    AOS.init({ duration: 1000, once: true, offset: 50 });
+
+    new Typed('#typing-effect', {
+        strings: ['你好，我是艾合', '一位非计算机专业编程爱好者', '欢迎来到我的空间','期望与您共同合作', '致力于将一切自动化',  '探索技术的无限可能'],
+        typeSpeed: 70,
+        backSpeed: 40,
+        loop: true
+    });
+
+
+    // --- INTERACTIVE EFFECTS ---
+    // 1. Text Decode Hover for Nav Links
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    document.querySelectorAll('a[data-value]').forEach(link => {
+        let interval = null;
+        link.onmouseover = event => {
+            let iteration = 0;
+            clearInterval(interval);
+            interval = setInterval(() => {
+                const target = event.currentTarget;
+                target.innerText = target.dataset.value.split("")
+                    .map((letter, index) => {
+                        if (index < iteration) return target.dataset.value[index];
+                        return letters[Math.floor(Math.random() * 52)];
+                    })
+                    .join("");
+                if (iteration >= target.dataset.value.length) clearInterval(interval);
+                iteration += 1 / 2;
+            }, 30);
+        };
+    });
+
+    // 2. 3D Tilt Effect
+    const initTiltEffect = () => {
+        if (window.innerWidth > 768 && !('ontouchstart' in window)) {
+            const tiltElements = document.querySelectorAll('.tilt-panel');
+            tiltElements.forEach(el => {
+                const content = el.querySelector('.card-content, .about-content, .hero-text-wrapper');
+                el.addEventListener('mousemove', e => {
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -8;
+                    const rotateY = ((x - centerX) / centerX) * 8;
+                    
+                    requestAnimationFrame(() => {
+                        if(content) content.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                    });
+                });
+                el.addEventListener('mouseleave', () => {
+                    requestAnimationFrame(() => {
+                        if(content) content.style.transform = 'rotateX(0deg) rotateY(0deg)';
+                    });
+                });
+            });
+        }
+    };
+    initTiltEffect();
+
+    // 3. Scroll-Driven Avatar Animation
+    const avatar = document.getElementById('hero-avatar');
+    window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY;
+        if (avatar && scrollY < window.innerHeight) {
+            const scale = Math.max(0.5, 1 - scrollY / 800);
+            const rotation = scrollY / 10;
+            const opacity = Math.max(0, 1 - scrollY / 500);
+            avatar.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
+            avatar.style.opacity = opacity;
+        }
+    });
+
+    // 4. Project Filtering System
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const projectItems = document.querySelectorAll('.project-card, .placeholder-card');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const filter = btn.dataset.filter;
+            projectItems.forEach(item => {
+                if (filter === 'all' || item.dataset.category === filter) {
+                    item.classList.add('visible');
+                } else {
+                    item.classList.remove('visible');
+                }
+            });
+        });
+    });
+    document.querySelector('.filter-btn[data-filter="all"]').click();
+
+    // 5. Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const applyTheme = (theme) => {
+        document.body.dataset.theme = theme;
+        themeToggle.querySelector('i').className = theme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+        localStorage.setItem('theme', theme);
+    };
+    themeToggle.addEventListener('click', () => {
+        const newTheme = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+    });
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    applyTheme(savedTheme);
+
+
+    // --- NAVIGATION & SCROLLING ---
+    const nav = document.querySelector('nav');
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const navUl = document.querySelector('nav ul');
+    const scrollToTopBtn = document.getElementById('scroll-to-top');
+
+    window.addEventListener('scroll', () => {
+        nav.classList.toggle('scrolled', window.scrollY > 50);
+        scrollToTopBtn.classList.toggle('visible', window.scrollY > 300);
+    });
+
+    mobileMenuBtn.addEventListener('click', () => {
+        mobileMenuBtn.classList.toggle('open');
+        navUl.classList.toggle('active');
+        document.body.classList.toggle('menu-open');
+    });
+    
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            if (navUl.classList.contains('active')) {
+                mobileMenuBtn.classList.remove('open');
+                navUl.classList.remove('active');
+                document.body.classList.remove('menu-open');
+            }
+        });
+    });
+
+    // --- COPY TO CLIPBOARD ---
+    const copyNotification = document.getElementById('copy-notification');
+    document.querySelectorAll('[data-copy]').forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigator.clipboard.writeText(item.dataset.copy).then(() => {
+                copyNotification.classList.add('show');
+                setTimeout(() => { copyNotification.classList.remove('show'); }, 2000);
+            });
+        });
+    });
+});
+
+// --- P5.JS PARTICLE BACKGROUND with Lines, Repulsion, Attraction, Shooting Stars & Theming ---
 let particles = [];
-let canvas;
-let deviceConfig;
+let shootingStars = [];
+const particleConfig = window.innerWidth > 768 ? 
+    { count: 100, repelRadius: 100, speed: 1.2, lineDist: 120 } : 
+    { count: 40, repelRadius: 60, speed: 0.8, lineDist: 100 };
 
-// p5.js 设置函数
 function setup() {
-    // 获取设备配置
-    deviceConfig = getDeviceConfig();
-    
-    // 创建画布并添加到背景容器
-    canvas = createCanvas(windowWidth, windowHeight);
-    canvas.parent('canvas-bg');
-    
-    // 创建粒子
-    particles = [];
-    for (let i = 0; i < deviceConfig.particleCount; i++) {
+    let canvas = createCanvas(window.innerWidth, window.innerHeight);
+    canvas.parent('particle-canvas');
+    for (let i = 0; i < particleConfig.count; i++) {
         particles.push(new Particle());
     }
-    
-    console.log(`设备类型: ${window.innerWidth < 768 ? '移动端' : (window.innerWidth <= 1024 ? '平板' : '电脑端')}`);
-    console.log(`粒子数量: ${deviceConfig.particleCount}, 连接距离: ${deviceConfig.connectionDistance}`);
+    // Create shooting stars at random intervals
+    setInterval(() => {
+        if (shootingStars.length < 3) {
+            shootingStars.push(new ShootingStar());
+        }
+    }, Math.random() * 5000 + 3000);
 }
 
-// p5.js 绘制函数
 function draw() {
-    // 根据主题设置背景色
-    const isLightTheme = document.body.getAttribute('data-theme') === 'light';
-    background(isLightTheme ? 245 : 10, isLightTheme ? 247 : 10, isLightTheme ? 250 : 26);
-    
-    let mouse = createVector(mouseX, mouseY);
+    clear();
+    const isLightTheme = document.body.dataset.theme === 'light';
+    const mouseVec = createVector(mouseX, mouseY);
 
-    // 更新和显示所有粒子
-    for (let p of particles) {
-        p.repel(mouse);
-        p.update();
-        p.edges();
-        p.display();
-    }
-
-    // 绘制粒子之间的连线
     for (let i = 0; i < particles.length; i++) {
+        particles[i].update(mouseVec);
+        particles[i].display(isLightTheme);
         for (let j = i + 1; j < particles.length; j++) {
-            let dist = p5.Vector.dist(particles[i].pos, particles[j].pos);
-            if (dist < deviceConfig.connectionDistance) {
-                let alpha = map(dist, 0, deviceConfig.connectionDistance, 150, 0);
-                stroke(isLightTheme ? 0 : 255, alpha);
-                strokeWeight(0.5);
+            const d = dist(particles[i].pos.x, particles[i].pos.y, particles[j].pos.x, particles[j].pos.y);
+            if (d < particleConfig.lineDist) {
+                const alpha = map(d, 0, particleConfig.lineDist, 60, 0);
+                const accent1 = isLightTheme ? color(0, 122, 204) : color(0, 246, 255);
+                accent1.setAlpha(alpha);
+                stroke(accent1);
+                strokeWeight(1);
                 line(particles[i].pos.x, particles[i].pos.y, particles[j].pos.x, particles[j].pos.y);
             }
         }
     }
+
+    for (let i = shootingStars.length - 1; i >= 0; i--) {
+        shootingStars[i].update();
+        shootingStars[i].display(isLightTheme);
+        if (shootingStars[i].isOffscreen()) {
+            shootingStars.splice(i, 1);
+        }
+    }
 }
 
-// 窗口大小改变时调整画布和重新初始化粒子
 function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
-    
-    // 重新获取设备配置并重新初始化粒子
-    const newConfig = getDeviceConfig();
-    
-    // 只有当配置发生变化时才重新创建粒子
-    if (newConfig.particleCount !== deviceConfig.particleCount) {
-        deviceConfig = newConfig;
-        particles = [];
-        for (let i = 0; i < deviceConfig.particleCount; i++) {
-            particles.push(new Particle());
-        }
-        console.log(`窗口大小改变 - 粒子数量: ${deviceConfig.particleCount}, 连接距离: ${deviceConfig.connectionDistance}`);
-    } else {
-        deviceConfig = newConfig;
-    }
+    resizeCanvas(window.innerWidth, window.innerHeight);
 }
 
-// 粒子类
 class Particle {
-    constructor() {
-        this.pos = createVector(random(width), random(height));
-        this.vel = p5.Vector.random2D().mult(random(0.2, 0.8));
-        this.acc = createVector(0, 0);
-        this.maxSpeed = deviceConfig.maxSpeed;
-        this.color = color(random(['#00ffff', '#ff00ff', '#ffff00', '#ffffff']));
-        this.size = random(1.5, 3);
-        this.pulseOffset = random(0, TWO_PI);
-    }
-
-    // 鼠标排斥效果
-    repel(target) {
-        let force = p5.Vector.sub(this.pos, target);
-        let distance = force.mag();
-        if (distance < deviceConfig.repulsionRadius) {
-            let strength = deviceConfig.repulsionStrength * (deviceConfig.repulsionRadius - distance) / deviceConfig.repulsionRadius;
-            force.setMag(strength);
-            this.applyForce(force);
-        }
-    }
-
-    applyForce(force) {
-        this.acc.add(force);
-    }
-
-    update() {
-        this.vel.add(this.acc);
-        this.vel.limit(this.maxSpeed);
-        this.pos.add(this.vel);
-        this.acc.mult(0);
-    }
-
-    display() {
-        // 脉动效果
-        let pulse = sin(this.pulseOffset + frameCount * 0.05) * 0.5 + 0.5;
-        stroke(red(this.color), green(this.color), blue(this.color), 100 + 155 * pulse);
-        strokeWeight(this.size * (0.8 + 0.4 * pulse));
-        point(this.pos.x, this.pos.y);
-    }
-
-    edges() {
-        // 边界处理 - 从一边穿到另一边
-        if (this.pos.x > width) this.pos.x = 0;
-        if (this.pos.x < 0) this.pos.x = width;
-        if (this.pos.y > height) this.pos.y = 0;
-        if (this.pos.y < 0) this.pos.y = height;
-    }
+    constructor() { this.pos = createVector(random(width), random(height)); this.vel = p5.Vector.random2D().mult(random(0.2, particleConfig.speed)); this.acc = createVector(0, 0); this.size = random(1, 3); this.maxSpeed = particleConfig.speed; }
+    applyForce(force) { this.acc.add(force); }
+    update(mouseVec) { if (mouseIsPressed) this.attract(mouseVec); else this.repel(mouseVec); this.vel.add(this.acc); this.vel.limit(this.maxSpeed); this.pos.add(this.vel); this.acc.mult(0); this.edges(); }
+    display(isLight) { const accent1 = isLight ? color(0, 122, 204) : color(0, 246, 255); noStroke(); fill(accent1); ellipse(this.pos.x, this.pos.y, this.size); }
+    repel(target) { const force = p5.Vector.sub(this.pos, target); const d = force.mag(); if (d < particleConfig.repelRadius) { force.setMag(map(d, 0, particleConfig.repelRadius, 1, 0) * 5); this.applyForce(force); } }
+    attract(target) { const force = p5.Vector.sub(target, this.pos); let d = force.mag(); d = constrain(d, 5, 50); force.setMag(0.8 / (d * d)); this.applyForce(force); }
+    edges() { if (this.pos.x < -10) this.pos.x = width + 10; if (this.pos.x > width + 10) this.pos.x = -10; if (this.pos.y < -10) this.pos.y = height + 10; if (this.pos.y > height + 10) this.pos.y = -10; }
 }
 
-// 主应用程序逻辑
-document.addEventListener('DOMContentLoaded', () => {
-    const navLinks = document.querySelectorAll('.nav-link');
-    const sections = document.querySelectorAll('.section');
-    const scrollDots = document.querySelectorAll('.scroll-dot');
-    const themeToggle = document.getElementById('theme-toggle');
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-    const navUl = document.querySelector('nav ul');
-    
-    // 导航切换
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            navLinks.forEach(item => item.classList.remove('active'));
-            sections.forEach(sec => sec.classList.remove('active'));
-            link.classList.add('active');
-            const targetId = link.getAttribute('href').substring(1);
-            document.getElementById(targetId).classList.add('active');
-            
-            // 移动端菜单关闭
-            if (navUl.classList.contains('active')) {
-                navUl.classList.remove('active');
-            }
-        });
-    });
-    
-    // 滚动指示器点击
-    scrollDots.forEach((dot, index) => {
-        dot.addEventListener('click', () => {
-            const sectionIds = ['hero', 'about', 'projects', 'contact'];
-            navLinks.forEach(item => item.classList.remove('active'));
-            sections.forEach(sec => sec.classList.remove('active'));
-            
-            document.getElementById(sectionIds[index]).classList.add('active');
-            document.querySelector(`a[href="#${sectionIds[index]}"]`).classList.add('active');
-        });
-    });
-    
-    // 滚动监听
-    window.addEventListener('scroll', () => {
-        let current = '';
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.clientHeight;
-            if (scrollY >= (sectionTop - 200)) {
-                current = section.getAttribute('id');
-            }
-        });
-        
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href').substring(1) === current) {
-                link.classList.add('active');
-            }
-        });
-        
-        scrollDots.forEach(dot => {
-            dot.classList.remove('active');
-            if (dot.getAttribute('data-section') === 
-                document.querySelector(`a[href="#${current}"]`).textContent) {
-                dot.classList.add('active');
-            }
-        });
-    });
-    
-    // 主题切换
-    themeToggle.addEventListener('click', () => {
-        const currentTheme = document.body.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.body.setAttribute('data-theme', newTheme);
-        
-        // 更新图标
-        const icon = themeToggle.querySelector('i');
-        icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
-        
-        // 保存主题偏好
-        localStorage.setItem('theme', newTheme);
-    });
-    
-    // 移动端菜单
-    mobileMenuBtn.addEventListener('click', () => {
-        navUl.classList.toggle('active');
-    });
-    
-    // 初始化进度条动画
-    const skillProgressBars = document.querySelectorAll('.skill-progress');
-    const observerOptions = {
-        threshold: 0.5
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const progressBar = entry.target;
-                const width = progressBar.getAttribute('data-width');
-                progressBar.style.width = width;
-                observer.unobserve(progressBar);
-            }
-        });
-    }, observerOptions);
-    
-    skillProgressBars.forEach(bar => {
-        observer.observe(bar);
-    });
-    
-    // 检查保存的主题偏好
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        document.body.setAttribute('data-theme', savedTheme);
-        const icon = themeToggle.querySelector('i');
-        icon.className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+class ShootingStar {
+    constructor() {
+        this.reset();
+        this.len = random(40, 60); // Denser tail
+        this.history = [];
     }
-});
+    reset() {
+        this.x = random(width * 1.5);
+        this.y = random(-height * 0.5, 0);
+        this.speed = random(15, 25);
+    }
+    isOffscreen() {
+        return this.x < -200 || this.y > height + 200;
+    }
+    update() {
+        this.x -= this.speed;
+        this.y += this.speed / 2;
+        this.history.push(createVector(this.x, this.y));
+        if (this.history.length > this.len) {
+            this.history.splice(0, 1);
+        }
+    }
+    display(isLight) {
+        // Draw the glow for the head
+        if (this.history.length > 0) {
+            const head = this.history[this.history.length - 1];
+            const glowColor = isLight ? color(0, 122, 204) : color(0, 246, 255);
+            glowColor.setAlpha(200); // Brighter glow
+            noStroke();
+            fill(glowColor);
+            ellipse(head.x, head.y, this.len * 0.75, this.len * 0.75); // Half size glow
+        }
+
+        // Draw the trail
+        for (let i = 0; i < this.history.length; i++) {
+            let pos = this.history[i];
+            let alpha = map(i, 0, this.history.length, 0, 255); // Full brightness trail
+            const starColor = isLight ? color(80, 80, 80) : color(255, 255, 255);
+            starColor.setAlpha(alpha);
+            noStroke();
+            fill(starColor);
+            ellipse(pos.x, pos.y, i * 0.75, i * 0.75); // Half size trail
+        }
+    }
+}
