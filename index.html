@@ -7,6 +7,14 @@
     <meta name="description" content="艾合的个人主页 - 充满热情的编程爱好者，专注于前端开发和AI协作编程">
     <meta name="keywords" content="前端开发,JavaScript,Python,AI编程,个人主页,艾合">
     
+    <!-- Optimization: Preconnect to external domains to speed up connection -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+
+    <!-- Optimization: Preload critical CSS files -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    <link rel="preload" href="style.css" as="style">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
     <link rel="stylesheet" href="style.css">
@@ -24,10 +32,10 @@
             <div class="nav-container">
                 <a href="#hero" class="nav-logo nav-link" data-value="艾合">艾合</a>
                 <ul>
-                    <li><a href="#hero" class="nav-link active" data-value="主页">主页</a></li>
-                    <li><a href="#about" class="nav-link" data-value="关于我">关于我</a></li>
-                    <li><a href="#projects" class="nav-link" data-value="我的项目">我的项目</a></li>
-                    <li><a href="#contact" class="nav-link" data-value="联系我">联系我</a></li>
+                    <li><a href="#hero" class="nav-link active" data-value="主页" data-section="hero">主页</a></li>
+                    <li><a href="#about" class="nav-link" data-value="关于我" data-section="about">关于我</a></li>
+                    <li><a href="#projects" class="nav-link" data-value="我的项目" data-section="projects">我的项目</a></li>
+                    <li><a href="#contact" class="nav-link" data-value="联系我" data-section="contact">联系我</a></li>
                     <li class="magic-line"></li>
                 </ul>
                 <div class="nav-controls">
@@ -45,7 +53,8 @@
             <section id="hero" class="section">
                 <div class="hero-content">
                     <div class="hero-left" data-aos="fade-right">
-                        <img src="IMG_20250810_032653.png" alt="艾合的头像" class="profile-img" id="hero-avatar">
+                        <!-- Optimization: Added lazy loading to the profile image -->
+                        <img src="IMG_20250810_032653.png" alt="艾合的头像" class="profile-img" id="hero-avatar" loading="lazy">
                     </div>
                     <div class="hero-right" data-aos="fade-left" data-aos-delay="200">
                         <div class="tilt-panel">
