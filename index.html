@@ -64,15 +64,15 @@
             
             <section id="about" class="section">
                 <div class="container">
-                    <h2 data-aos="fade-up">关于我</h2>
-                    <div class="about-panel tilt-panel">
+                    <h2 class="decode-text" data-value="关于我">关于我</h2>
+                    <div class="about-panel tilt-panel" data-aos="fade-up">
                         <div class="about-content">
                             <div class="about-text" data-aos="fade-right" data-aos-delay="100">
                                 <h3>一个与AI“共生”的创造者</h3>
                                 <p>坦白说，如果让我手写一行复杂的算法，我可能会把键盘敲出火星子——但这并不妨碍我热爱创造。我的编程之路有点“曲线救国”：脑子里有天马行空的想法，手里有能与AI流畅沟通的“魔法咒语”（也就是Prompt）。</p>
                                 <p>我更像是一个AI开发团队的产品经理兼艺术总监。我负责提出疯狂的需求，AI负责实现，我再负责验收和“指点江山”。这种奇妙的合作模式，让我这个“编程小白”也能打造出自己想要的自动化工具和应用。</p>
                             </div>
-                            <div class="about-stats" data-aos="fade-left" data-aos-delay="200">
+                            <div class="about-stats shine-effect" data-aos="fade-left" data-aos-delay="200">
                                 <h3>机体参数</h3>
                                 <ul>
                                     <li><span>创意生成 (Idea Generation)</span><div class="stat-bar"><div style="width: 95%;"></div></div></li>
@@ -89,7 +89,7 @@
             
             <section id="projects" class="section">
                 <div class="container">
-                    <h2 data-aos="fade-up">我的项目</h2>
+                    <h2 class="decode-text" data-value="我的项目">我的项目</h2>
                     <div class="project-filters" data-aos="fade-up" data-aos-delay="100">
                         <button class="filter-btn active" data-filter="all">全部</button>
                         <button class="filter-btn" data-filter="exe">EXE</button>
@@ -99,14 +99,51 @@
                         <button class="filter-btn" data-filter="other">其他</button>
                     </div>
 
-                    <div class="project-grid">
-                        <div class="project-card tilt-panel" data-category="exe"><div class="card-content"><h3>区域翻译EXE</h3><p>可圈出特定区域一直翻译该区域，支持全屏或多特定区域翻译的桌面应用程序。</p><a href="https://github.com/AIheshen/Quyufanyi" target="_blank">查看详情</a></div></div>
-                        <div class="project-card tilt-panel" data-category="plugin"><div class="card-content"><h3>网页检测与输入插件</h3><p>用于个人特定项目网站，可自动填写网页输入框、检查内容重复、一次性增加10行输入框等。</p><a href="https://github.com/AIheshen/HTMLzhuaqu-chachongchajian" target="_blank">查看详情</a></div></div>
-                        <div class="project-card tilt-panel" data-category="plugin"><div class="card-content"><h3>符号处理插件</h3><p>用于个人特定项目网页，可批量给输入内容加字符/隔离符、更改斜杠方向且支持多输入框同步操作。</p><a href="https://github.com/AIheshen/Fanxiegang-zifu-chajian" target="_blank">查看详情</a></div></div>
-                        <div class="project-card tilt-panel" data-category="plugin"><div class="card-content"><h3>URL收集筛选插件</h3><p>除特定项目网站外的所有网页适用，可收集当前网页可跳转URL、筛选后导出为表格。</p><a href="https://github.com/AIheshen/HTMLzhuaqupiliangzhuaqu" target="_blank">查看详情</a></div></div>
-                        <div class="project-card tilt-panel" data-category="plugin"><div class="card-content"><h3>悬浮便捷复制助手</h3><p>全网页通用，可悬浮于网页、预设常用内容分组并一键复制，且能本地记忆内容。</p><a href="https://github.com/AIheshen/Bianjie-fuzhi-chajian" target="_blank">查看详情</a></div></div>
-                        <div class="project-card tilt-panel" data-category="exe"><div class="card-content"><h3>黑客模拟展示EXE</h3><p>静态展示黑客操作或操作完成界面的EXE，有黑白绿三种格式，为首个独立EXE作品。</p><a href="https://github.com/AIheshen/Moni-heike-exe" target="_blank">查看详情</a></div></div>
-                        <div class="project-card tilt-panel" data-category="exe"><div class="card-content"><h3>双模式笔记EXE</h3><p>桌面笔记EXE，支持永久置顶，可在同一界面切换记事本与备忘录，内容永久保存。</p><a href="https://github.com/AIheshen/Jishibeiwanglu-exe" target="_blank">查看详情</a></div></div>
+                    <div class="project-grid" data-aos="fade-up" data-aos-delay="200">
+                        
+                        <div class="project-card" data-category="exe">
+                            <div class="project-flipper">
+                                <div class="project-front"><div class="card-content"><h3>区域翻译EXE</h3></div></div>
+                                <div class="project-back"><div class="card-content"><h3>区域翻译EXE</h3><p>可圈出特定区域一直翻译该区域，支持全屏或多特定区域翻译的桌面应用程序。</p><a href="https://github.com/AIheshen/Quyufanyi" target="_blank">查看详情</a></div></div>
+                            </div>
+                        </div>
+                        <div class="project-card" data-category="plugin">
+                             <div class="project-flipper">
+                                <div class="project-front"><div class="card-content"><h3>网页检测与输入插件</h3></div></div>
+                                <div class="project-back"><div class="card-content"><h3>网页检测与输入插件</h3><p>用于个人特定项目网站，可自动填写网页输入框、检查内容重复、一次性增加10行输入框等。</p><a href="https://github.com/AIheshen/HTMLzhuaqu-chachongchajian" target="_blank">查看详情</a></div></div>
+                            </div>
+                        </div>
+                        <div class="project-card" data-category="plugin">
+                             <div class="project-flipper">
+                                <div class="project-front"><div class="card-content"><h3>符号处理插件</h3></div></div>
+                                <div class="project-back"><div class="card-content"><h3>符号处理插件</h3><p>用于个人特定项目网页，可批量给输入内容加字符/隔离符、更改斜杠方向且支持多输入框同步操作。</p><a href="https://github.com/AIheshen/Fanxiegang-zifu-chajian" target="_blank">查看详情</a></div></div>
+                            </div>
+                        </div>
+                        <div class="project-card" data-category="plugin">
+                             <div class="project-flipper">
+                                <div class="project-front"><div class="card-content"><h3>URL收集筛选插件</h3></div></div>
+                                <div class="project-back"><div class="card-content"><h3>URL收集筛选插件</h3><p>除特定项目网站外的所有网页适用，可收集当前网页可跳转URL、筛选后导出为表格。</p><a href="https://github.com/AIheshen/HTMLzhuaqupiliangzhuaqu" target="_blank">查看详情</a></div></div>
+                            </div>
+                        </div>
+                        <div class="project-card" data-category="plugin">
+                             <div class="project-flipper">
+                                <div class="project-front"><div class="card-content"><h3>悬浮便捷复制助手</h3></div></div>
+                                <div class="project-back"><div class="card-content"><h3>悬浮便捷复制助手</h3><p>全网页通用，可悬浮于网页、预设常用内容分组并一键复制，且能本地记忆内容。</p><a href="https://github.com/AIheshen/Bianjie-fuzhi-chajian" target="_blank">查看详情</a></div></div>
+                            </div>
+                        </div>
+                        <div class="project-card" data-category="exe">
+                             <div class="project-flipper">
+                                <div class="project-front"><div class="card-content"><h3>黑客模拟展示EXE</h3></div></div>
+                                <div class="project-back"><div class="card-content"><h3>黑客模拟展示EXE</h3><p>静态展示黑客操作或操作完成界面的EXE，有黑白绿三种格式，为首个独立EXE作品。</p><a href="https://github.com/AIheshen/Moni-heike-exe" target="_blank">查看详情</a></div></div>
+                            </div>
+                        </div>
+                        <div class="project-card" data-category="exe">
+                            <div class="project-flipper">
+                                <div class="project-front"><div class="card-content"><h3>双模式笔记EXE</h3></div></div>
+                                <div class="project-back"><div class="card-content"><h3>双模式笔记EXE</h3><p>桌面笔记EXE，支持永久置顶，可在同一界面切换记事本与备忘录，内容永久保存。</p><a href="https://github.com/AIheshen/Jishibeiwanglu-exe" target="_blank">查看详情</a></div></div>
+                            </div>
+                        </div>
+
                         <div class="placeholder-card" data-category="app"><div class="card-content"><h3>敬请期待！</h3><p>新的APP项目正在构思中...</p></div></div>
                         <div class="placeholder-card" data-category="script"><div class="card-content"><h3>敬请期待！</h3><p>新的脚本项目正在构思中...</p></div></div>
                         <div class="placeholder-card" data-category="other"><div class="card-content"><h3>敬请期待！</h3><p>新的其他项目正在构思中...</p></div></div>
@@ -116,7 +153,7 @@
             
             <section id="contact" class="section">
                 <div class="container">
-                    <h2 data-aos="fade-up">联系我</h2>
+                    <h2 class="decode-text" data-value="联系我">联系我</h2>
                     <p class="contact-subtitle" data-aos="fade-up" data-aos-delay="100">欢迎交流技术或讨论项目合作</p>
                     <div class="social-links" data-aos="fade-up" data-aos-delay="200">
                         <a href="https://github.com/AIheshen" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
@@ -133,9 +170,9 @@
         <i class="fas fa-arrow-up"></i>
     </a>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
-    <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js" defer></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12" defer></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
